@@ -14,7 +14,7 @@ export const RainEffect = () => {
 
   useEffect(() => {
     const drops: Raindrop[] = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 30; i++) {
       drops.push({
         id: i,
         x: Math.random() * 100,
