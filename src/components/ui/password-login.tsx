@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock } from "lucide-react";
+import { XLogo } from "@/components/ui/x-logo";
 
 interface PasswordLoginProps {
   onSuccess: () => void;
@@ -38,63 +38,73 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-md bg-black/60 border-gray-700 backdrop-blur-xl shadow-2xl">
-        <CardHeader className="text-center pb-6">
+      <Card className="w-full max-w-md bg-black/70 border-gray-700/50 backdrop-blur-2xl shadow-2xl">
+        <CardHeader className="text-center pb-8">
           <motion.div
-            initial={{ y: -20 }}
-            animate={{ y: 0 }}
-            transition={{ delay: 0.2 }}
+            initial={{ y: -30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <div className="mb-4 p-3 bg-blue-600/20 rounded-full">
-              <Lock className="w-8 h-8 text-blue-400" />
+            <div className="mb-6">
+              <XLogo size={80} />
             </div>
-            <CardTitle className="text-4xl font-bold text-white mb-2 tracking-wide">
+            <CardTitle className="text-4xl font-bold text-white mb-3 tracking-wider">
               X-LiNk
             </CardTitle>
-            <p className="text-gray-400 text-sm uppercase tracking-wider">
-              Access Portal
+            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-3"></div>
+            <p className="text-gray-400 text-sm uppercase tracking-wider font-medium">
+              Secure Access Portal
             </p>
           </motion.div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="space-y-6 pb-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.4 }}
             >
               <Input
                 type="password"
-                placeholder="Enter password"
+                placeholder="Enter security code"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/50 border-gray-600 text-white placeholder:text-gray-500 h-12 focus:border-blue-500 transition-colors"
+                className="bg-black/60 border-gray-600/50 text-white placeholder:text-gray-500 h-14 text-center text-lg font-mono tracking-widest focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-300"
                 disabled={isLoading}
               />
             </motion.div>
 
             {error && (
-              <motion.p
-                className="text-red-400 text-sm text-center font-medium"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                {error}
-              </motion.p>
+                <p className="text-red-400 text-sm font-medium bg-red-900/20 border border-red-500/30 rounded-lg py-2 px-4">
+                  {error}
+                </p>
+              </motion.div>
             )}
 
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.6 }}
             >
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 font-semibold tracking-wide transition-all duration-200"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white h-14 font-semibold tracking-wide transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
                 disabled={isLoading || !password}
               >
-                {isLoading ? "Authenticating..." : "ACCESS SYSTEM"}
+                {isLoading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Authenticating...
+                  </div>
+                ) : (
+                  "INITIALIZE ACCESS"
+                )}
               </Button>
             </motion.div>
           </form>
