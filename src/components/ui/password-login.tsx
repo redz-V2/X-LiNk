@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lock } from "lucide-react";
 
 interface PasswordLoginProps {
   onSuccess: () => void;
@@ -23,7 +24,7 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
       if (password === "54787") {
         onSuccess();
       } else {
-        setError("كلمة المرور غير صحيحة");
+        setError("Incorrect password");
         setPassword("");
       }
       setIsLoading(false);
@@ -37,20 +38,26 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-md bg-black/40 border-blue-800 backdrop-blur-md">
-        <CardHeader className="text-center">
+      <Card className="w-full max-w-md bg-black/60 border-gray-700 backdrop-blur-xl shadow-2xl">
+        <CardHeader className="text-center pb-6">
           <motion.div
             initial={{ y: -20 }}
             animate={{ y: 0 }}
             transition={{ delay: 0.2 }}
+            className="flex flex-col items-center"
           >
-            <CardTitle className="text-3xl font-bold text-white mb-2">
+            <div className="mb-4 p-3 bg-blue-600/20 rounded-full">
+              <Lock className="w-8 h-8 text-blue-400" />
+            </div>
+            <CardTitle className="text-4xl font-bold text-white mb-2 tracking-wide">
               X-LiNk
             </CardTitle>
-            <p className="text-blue-200">أدخل كلمة المرور للدخول</p>
+            <p className="text-gray-400 text-sm uppercase tracking-wider">
+              Access Portal
+            </p>
           </motion.div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <motion.div
               initial={{ x: -20, opacity: 0 }}
@@ -59,17 +66,17 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
             >
               <Input
                 type="password"
-                placeholder="كلمة المرور"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/50 border-blue-700 text-white placeholder:text-blue-300"
+                className="bg-black/50 border-gray-600 text-white placeholder:text-gray-500 h-12 focus:border-blue-500 transition-colors"
                 disabled={isLoading}
               />
             </motion.div>
 
             {error && (
               <motion.p
-                className="text-red-400 text-sm text-center"
+                className="text-red-400 text-sm text-center font-medium"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
@@ -84,10 +91,10 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
             >
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 font-semibold tracking-wide transition-all duration-200"
                 disabled={isLoading || !password}
               >
-                {isLoading ? "جاري التحقق..." : "دخول"}
+                {isLoading ? "Authenticating..." : "ACCESS SYSTEM"}
               </Button>
             </motion.div>
           </form>
