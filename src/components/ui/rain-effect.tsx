@@ -14,13 +14,13 @@ export const RainEffect = () => {
 
   useEffect(() => {
     const drops: Raindrop[] = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 25; i++) {
       drops.push({
         id: i,
         x: Math.random() * 100,
         delay: Math.random() * 2,
         duration: Math.random() * 1 + 0.5,
-        opacity: Math.random() * 0.6 + 0.2,
+        opacity: Math.random() * 0.5 + 0.2,
       });
     }
     setRaindrops(drops);
@@ -31,14 +31,15 @@ export const RainEffect = () => {
       {raindrops.map((drop) => (
         <motion.div
           key={drop.id}
-          className="absolute w-0.5 bg-gradient-to-b from-blue-300 to-transparent"
+          className="absolute w-0.5 bg-gradient-to-b from-blue-400 via-blue-300 to-transparent"
           style={{
             left: `${drop.x}%`,
-            height: "100px",
+            height: "120px",
             opacity: drop.opacity,
+            filter: "blur(0.5px)",
           }}
-          initial={{ y: -100 }}
-          animate={{ y: "100vh" }}
+          initial={{ y: -120 }}
+          animate={{ y: "calc(100vh + 120px)" }}
           transition={{
             duration: drop.duration,
             delay: drop.delay,

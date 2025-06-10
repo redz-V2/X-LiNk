@@ -15,14 +15,14 @@ export const SnowEffect = () => {
 
   useEffect(() => {
     const flakes: Snowflake[] = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 35; i++) {
       flakes.push({
         id: i,
         x: Math.random() * 100,
-        size: Math.random() * 4 + 2,
+        size: Math.random() * 3 + 2,
         delay: Math.random() * 3,
         duration: Math.random() * 3 + 2,
-        opacity: Math.random() * 0.8 + 0.2,
+        opacity: Math.random() * 0.7 + 0.2,
       });
     }
     setSnowflakes(flakes);
@@ -33,16 +33,17 @@ export const SnowEffect = () => {
       {snowflakes.map((flake) => (
         <motion.div
           key={flake.id}
-          className="absolute rounded-full bg-white"
+          className="absolute rounded-full bg-gradient-to-b from-white via-blue-100 to-blue-200 shadow-sm"
           style={{
             left: `${flake.x}%`,
             width: `${flake.size}px`,
             height: `${flake.size}px`,
             opacity: flake.opacity,
+            filter: "blur(0.3px)",
           }}
           initial={{ y: -20 }}
           animate={{
-            y: "100vh",
+            y: "calc(100vh + 20px)",
             x: [0, 30, -30, 0],
           }}
           transition={{

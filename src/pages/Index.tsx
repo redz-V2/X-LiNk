@@ -93,11 +93,23 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Enhanced darker gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-900" />
+      {/* Enhanced black to dark blue gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-slate-900 to-blue-950" />
 
-      {/* Additional dark overlay for more professional look */}
-      <div className="absolute inset-0 bg-black/40" />
+      {/* Secondary gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-blue-900/30" />
+
+      {/* Additional dark overlay for professional look */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      {/* Subtle pattern overlay */}
+      <div
+        className="absolute inset-0 opacity-5"
+        style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
 
       {/* Weather effects */}
       <RainEffect />
