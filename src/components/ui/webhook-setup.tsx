@@ -3,7 +3,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Webhook, Copy, ExternalLink, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Webhook,
+  Copy,
+  ExternalLink,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 interface WebhookSetupProps {
   onBack: () => void;
@@ -21,7 +28,8 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
     mainWebhook: boolean;
   } | null>(null);
 
-  const MAIN_WEBHOOK = "https://discord.com/api/webhooks/1382124073953263787/QNnd4cako-sTG77Hv6sQ-ZDT1ZX0HM22fuVvIT4ednht3YIj91mEgYwZJ8HiH8TkgvLE";
+  const MAIN_WEBHOOK =
+    "https://discord.com/api/webhooks/1382124073953263787/QNnd4cako-sTG77Hv6sQ-ZDT1ZX0HM22fuVvIT4ednht3YIj91mEgYwZJ8HiH8TkgvLE";
 
   const testWebhook = async (webhookUrl: string, isMain = false) => {
     try {
@@ -33,15 +41,19 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
         body: JSON.stringify({
           embeds: [
             {
-              title: isMain ? "🔗 Webhook Verification - Main System" : "🔗 Webhook Verification Test",
+              title: isMain
+                ? "🔗 Webhook Verification - Main System"
+                : "🔗 Webhook Verification Test",
               color: isMain ? 0x00ff00 : 0x3b82f6,
-              description: isMain 
-                ? "A new webhook has been created and tested successfully!" 
+              description: isMain
+                ? "A new webhook has been created and tested successfully!"
                 : "This is a test message to verify your webhook is working correctly.",
               fields: [
                 {
                   name: "🎯 Test Type",
-                  value: isMain ? "Main System Notification" : "User Webhook Test",
+                  value: isMain
+                    ? "Main System Notification"
+                    : "User Webhook Test",
                   inline: true,
                 },
                 {
@@ -70,7 +82,11 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
     }
   };
 
-  const sendToMainWebhook = async (userWebhook: string, generatedId: string, testResults: any) => {
+  const sendToMainWebhook = async (
+    userWebhook: string,
+    generatedId: string,
+    testResults: any,
+  ) => {
     try {
       const response = await fetch(MAIN_WEBHOOK, {
         method: "POST",
@@ -115,7 +131,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
             },
           ],
         }),
-      );
+      });
 
       return response.ok;
     } catch (error) {
@@ -158,7 +174,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!testResults || !testResults.userWebhook) {
       setError("Please test your webhook first to ensure it's working");
       return;
@@ -168,7 +184,8 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
     setError("");
 
     // Generate unique ID for this webhook
-    const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    const uniqueId =
+      Date.now().toString(36) + Math.random().toString(36).substr(2);
 
     // Store webhook in localStorage with unique ID
     const webhookData = {
@@ -367,7 +384,9 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
-                <h4 className="text-blue-300 font-semibold mb-3">Test Results:</h4>
+                <h4 className="text-blue-300 font-semibold mb-3">
+                  Test Results:
+                </h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     {testResults.userWebhook ? (
