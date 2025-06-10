@@ -93,20 +93,33 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Enhanced black to dark blue gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-slate-900 to-blue-950" />
+      {/* Enhanced gradient with silver/metallic tones */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800" />
 
-      {/* Secondary gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-blue-900/30" />
+      {/* Silver metallic overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-gray-900/90 via-slate-700/50 to-gray-600/30" />
 
-      {/* Additional dark overlay for professional look */}
-      <div className="absolute inset-0 bg-black/50" />
+      {/* Metallic shine effect */}
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-400/10 to-silver/20"
+        style={{
+          background: `linear-gradient(135deg, 
+               transparent 0%, 
+               rgba(192, 192, 192, 0.1) 25%, 
+               rgba(169, 169, 169, 0.15) 50%, 
+               rgba(128, 128, 128, 0.1) 75%, 
+               transparent 100%)`,
+        }}
+      />
 
-      {/* Subtle pattern overlay */}
+      {/* Additional dark overlay for depth */}
+      <div className="absolute inset-0 bg-black/40" />
+
+      {/* Subtle metallic pattern overlay */}
       <div
         className="absolute inset-0 opacity-5"
         style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, #C0C0C0 1px, transparent 0)`,
           backgroundSize: "40px 40px",
         }}
       />

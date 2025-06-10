@@ -31,12 +31,17 @@ export const RainEffect = () => {
       {raindrops.map((drop) => (
         <motion.div
           key={drop.id}
-          className="absolute w-0.5 bg-gradient-to-b from-blue-400 via-blue-300 to-transparent"
+          className="absolute w-0.5 bg-gradient-to-b from-gray-300 via-gray-400 to-transparent"
           style={{
             left: `${drop.x}%`,
             height: "120px",
             opacity: drop.opacity,
             filter: "blur(0.5px)",
+            background: `linear-gradient(to bottom, 
+              rgba(192, 192, 192, 0.8), 
+              rgba(169, 169, 169, 0.6), 
+              rgba(128, 128, 128, 0.4), 
+              transparent)`,
           }}
           initial={{ y: -120 }}
           animate={{ y: "calc(100vh + 120px)" }}

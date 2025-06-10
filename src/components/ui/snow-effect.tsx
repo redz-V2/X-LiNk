@@ -33,13 +33,19 @@ export const SnowEffect = () => {
       {snowflakes.map((flake) => (
         <motion.div
           key={flake.id}
-          className="absolute rounded-full bg-gradient-to-b from-white via-blue-100 to-blue-200 shadow-sm"
+          className="absolute rounded-full shadow-sm"
           style={{
             left: `${flake.x}%`,
             width: `${flake.size}px`,
             height: `${flake.size}px`,
             opacity: flake.opacity,
             filter: "blur(0.3px)",
+            background: `radial-gradient(circle, 
+              rgba(255, 255, 255, 0.9) 0%, 
+              rgba(192, 192, 192, 0.7) 40%, 
+              rgba(169, 169, 169, 0.5) 70%, 
+              rgba(128, 128, 128, 0.3) 100%)`,
+            boxShadow: `0 0 ${flake.size * 2}px rgba(192, 192, 192, 0.3)`,
           }}
           initial={{ y: -20 }}
           animate={{
