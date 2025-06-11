@@ -130,62 +130,77 @@ export const Dashboard = ({
         )}
       </motion.div>
 
+      {/* Ultra-Premium Cards Grid */}
       <div
-        className={`grid gap-10 max-w-6xl w-full ${
+        className={`grid gap-12 max-w-7xl w-full ${
           isCustomInstance
             ? "md:grid-cols-2 grid-cols-1"
             : "lg:grid-cols-3 md:grid-cols-2 grid-cols-1"
         }`}
       >
+        {/* Ultra-Premium Delete Gmail Card */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          whileHover={{ scale: 1.03, y: -8 }}
-          whileTap={{ scale: 0.97 }}
+          initial={{ opacity: 0, x: -60, rotateY: -15 }}
+          animate={{ opacity: 1, x: 0, rotateY: 0 }}
+          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+          whileHover={{ scale: 1.05, y: -12, rotateY: 5 }}
+          whileTap={{ scale: 0.98 }}
+          className="perspective-1000"
         >
-          <Card className="bg-black/60 border-red-500/40 backdrop-blur-2xl hover:bg-black/70 transition-all duration-500 cursor-pointer h-full group shadow-2xl hover:shadow-red-500/25">
-            <CardHeader className="text-center pb-8">
-              <div className="flex justify-center mb-8">
+          <Card className="card-professional border-red-500/60 hover:border-red-400/80 cursor-pointer h-full group relative overflow-hidden transform-gpu">
+            {/* Premium card overlay effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <CardHeader className="text-center pb-10 relative z-10">
+              <div className="flex justify-center mb-10">
                 <motion.div
-                  className="p-8 bg-gradient-to-br from-red-600/30 to-red-700/40 rounded-3xl group-hover:from-red-500/40 group-hover:to-red-600/50 transition-all duration-500 shadow-lg"
-                  whileHover={{ rotate: 8, scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className="relative p-10 bg-gradient-to-br from-red-600/20 to-red-700/30 rounded-3xl group-hover:from-red-500/30 group-hover:to-red-600/40 transition-all duration-500 shadow-2xl"
+                  whileHover={{ rotate: 12, scale: 1.15 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <Trash2 className="w-20 h-20 text-red-400 group-hover:text-red-300 transition-colors" />
+                  {/* Glowing ring around icon */}
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-red-500/30 to-red-600/30 blur-xl scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <Trash2 className="w-24 h-24 text-red-400 group-hover:text-red-300 transition-colors relative z-10" />
+                  {/* Premium corner accents */}
+                  <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-red-400/50"></div>
+                  <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-red-400/50"></div>
                 </motion.div>
               </div>
-              <CardTitle className="text-3xl text-white font-bold tracking-wide mb-2">
+              <CardTitle className="text-4xl text-neon font-black tracking-wide mb-4">
                 Delete Gmail
               </CardTitle>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+              <div className="w-20 h-1.5 bg-gradient-to-r from-red-500 to-red-400 mx-auto rounded-full shadow-lg"></div>
             </CardHeader>
-            <CardContent className="text-center space-y-6 pb-8">
-              <p className="text-red-200 text-lg leading-relaxed">
-                Standard Gmail account deletion process. Requires Roblox
-                authentication cookies.
+            <CardContent className="text-center space-y-8 pb-10 relative z-10">
+              <p className="text-red-200 text-xl leading-relaxed font-medium">
+                Ultra-fast Gmail deletion with advanced Roblox authentication
+                system
               </p>
-              <div className="space-y-2 text-sm text-red-300/80">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                  <span>Quick processing</span>
+              <div className="space-y-3 text-base text-red-300/90">
+                <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Lightning Processing</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                  <span>Cookie authentication</span>
+                <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Advanced Security</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                  <span>Instant execution</span>
+                <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Instant Execution</span>
                 </div>
               </div>
               <Button
                 onClick={onDeleteGmail}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-4 text-lg font-semibold shadow-xl hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-red-600 via-red-500 to-red-600 hover:from-red-500 hover:via-red-400 hover:to-red-500 text-white py-5 text-xl font-bold shadow-2xl hover:shadow-red-500/40 transition-all duration-400 transform hover:scale-105 btn-professional group relative overflow-hidden"
                 size="lg"
               >
-                <Mail className="w-5 h-5 mr-3" />
-                Initialize Process
+                <div className="flex items-center justify-center gap-4 relative z-10">
+                  <Mail className="w-6 h-6" />
+                  <span className="tracking-wider">INITIALIZE PROCESS</span>
+                  <div className="w-2 h-2 bg-white/80 rounded-full animate-pulse"></div>
+                </div>
               </Button>
             </CardContent>
           </Card>
