@@ -257,33 +257,65 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Floating Particles Effect */}
+      {/* Ultra-Premium Floating Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
+        {/* Premium Floating Particles */}
+        {[...Array(20)].map((_, i) => (
           <div
-            key={i}
-            className="absolute w-1 h-1 bg-blue-400/20 rounded-full animate-float"
+            key={`particle-${i}`}
+            className="absolute rounded-full animate-float"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
+              animationDelay: `${Math.random() * 4}s`,
+              animationDuration: `${4 + Math.random() * 3}s`,
+              width: `${2 + Math.random() * 3}px`,
+              height: `${2 + Math.random() * 3}px`,
+              background: `radial-gradient(circle, rgba(59, 130, 246, ${0.2 + Math.random() * 0.3}) 0%, transparent 70%)`,
+            }}
+          />
+        ))}
+
+        {/* Premium Geometric Shapes */}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`shape-${i}`}
+            className="absolute opacity-10 animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${6 + Math.random() * 4}s`,
+              width: `${8 + Math.random() * 16}px`,
+              height: `${8 + Math.random() * 16}px`,
+              background: `linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))`,
+              borderRadius: Math.random() > 0.5 ? "50%" : "20%",
+              transform: `rotate(${Math.random() * 360}deg)`,
             }}
           />
         ))}
       </div>
 
-      {/* Performance Scanlines Effect */}
+      {/* Ultra-Professional Scanlines */}
       <div
-        className="absolute inset-0 opacity-[0.01] pointer-events-none"
+        className="absolute inset-0 opacity-[0.015] pointer-events-none"
         style={{
-          background: `repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(59, 130, 246, 0.1) 2px,
-            rgba(59, 130, 246, 0.1) 4px
-          )`,
+          background: `
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 1px,
+              rgba(59, 130, 246, 0.15) 1px,
+              rgba(59, 130, 246, 0.15) 2px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 60px,
+              rgba(147, 51, 234, 0.05) 60px,
+              rgba(147, 51, 234, 0.05) 61px
+            )
+          `,
         }}
       />
 
