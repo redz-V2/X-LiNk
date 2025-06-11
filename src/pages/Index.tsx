@@ -216,19 +216,41 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Professional Watermark */}
+      {/* Ultra-Professional Watermark */}
       <div className="fixed bottom-6 left-6 z-50">
-        <div className="glass-effect rounded-lg px-4 py-2">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">X</span>
+        <div className="glass-effect rounded-2xl px-6 py-4 border border-blue-500/20 shadow-xl backdrop-blur-xl">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg metallic-text">
+                  X
+                </span>
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-white font-semibold text-sm tracking-wide">
+              <span className="text-white font-bold text-lg tracking-wide metallic-text">
                 X-LiNk
               </span>
-              <span className="text-gray-400 text-xs font-mono">
-                v2.0 Professional
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 text-xs font-mono">
+                  v2.1 Ultra Professional
+                </span>
+                <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <span className="text-gray-500 text-xs font-mono">
+                  Enterprise
+                </span>
+              </div>
+            </div>
+            <div className="w-px h-8 bg-blue-500/30"></div>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] text-gray-500 font-mono">
+                STATUS
+              </span>
+              <span className="text-xs text-green-400 font-mono font-bold">
+                ACTIVE
               </span>
             </div>
           </div>
