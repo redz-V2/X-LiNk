@@ -155,25 +155,65 @@ const Index = () => {
       <RainEffect />
       <SnowEffect />
 
-      {/* Professional Status Indicators */}
-      <div className="fixed top-6 right-6 z-50 flex flex-col gap-2">
-        {/* Keep-alive indicator */}
-        <div className="glass-effect rounded-full px-4 py-2 flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-xs font-medium text-green-300 font-mono">
-            ONLINE
-          </span>
+      {/* Ultra-Professional Status Panel */}
+      <div className="fixed top-6 right-6 z-50 flex flex-col gap-3">
+        {/* System Status Indicator */}
+        <div className="glass-effect rounded-2xl px-5 py-3 border border-green-500/20 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-30"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-green-300 font-mono tracking-wider">
+                SYSTEM ONLINE
+              </span>
+              <span className="text-[10px] text-green-400/70 font-mono">
+                {new Date().toLocaleTimeString()}
+              </span>
+            </div>
+            <div className="w-px h-6 bg-green-500/30"></div>
+            <div className="text-[10px] text-green-400/70 font-mono">99.9%</div>
+          </div>
         </div>
 
-        {/* Instance type indicator */}
+        {/* Instance Type Indicator */}
         {isCustomInstance && (
-          <div className="glass-effect rounded-full px-4 py-2 flex items-center gap-2">
-            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-            <span className="text-xs font-medium text-purple-300 font-mono">
-              CUSTOM
-            </span>
+          <div className="glass-effect rounded-2xl px-5 py-3 border border-purple-500/20 shadow-lg backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                <div className="absolute inset-0 w-3 h-3 bg-purple-400 rounded-full animate-pulse opacity-60"></div>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-purple-300 font-mono tracking-wider">
+                  CUSTOM INSTANCE
+                </span>
+                <span className="text-[10px] text-purple-400/70 font-mono">
+                  ID: {isCustomInstance.slice(0, 8)}...
+                </span>
+              </div>
+            </div>
           </div>
         )}
+
+        {/* Security Level Indicator */}
+        <div className="glass-effect rounded-2xl px-5 py-3 border border-blue-500/20 shadow-lg backdrop-blur-xl">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+              <div className="absolute inset-0 w-3 h-3 bg-blue-400 rounded-full animate-pulse opacity-60"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-blue-300 font-mono tracking-wider">
+                SECURE MODE
+              </span>
+              <span className="text-[10px] text-blue-400/70 font-mono">
+                256-BIT SSL
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Professional Watermark */}
