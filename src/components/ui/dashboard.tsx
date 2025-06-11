@@ -277,58 +277,73 @@ export const Dashboard = ({
           </Card>
         </motion.div>
 
-        {/* Only show webhook creation if NOT a custom instance */}
+        {/* Ultra-Premium Webhook Creation Card */}
         {!isCustomInstance && onCreateWebhook && (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            whileHover={{ scale: 1.03, y: -8 }}
-            whileTap={{ scale: 0.97 }}
-            className="lg:col-span-1 md:col-span-2"
+            initial={{ opacity: 0, x: 60, rotateY: 15 }}
+            animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.05, y: -12, rotateY: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="lg:col-span-1 md:col-span-2 perspective-1000"
           >
-            <Card className="bg-black/60 border-purple-500/40 backdrop-blur-2xl hover:bg-black/70 transition-all duration-500 cursor-pointer h-full group shadow-2xl hover:shadow-purple-500/25">
-              <CardHeader className="text-center pb-8">
-                <div className="flex justify-center mb-8">
+            <Card className="card-professional border-purple-500/60 hover:border-purple-400/80 cursor-pointer h-full group relative overflow-hidden transform-gpu">
+              {/* Premium card overlay effects */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+              <CardHeader className="text-center pb-10 relative z-10">
+                <div className="flex justify-center mb-10">
                   <motion.div
-                    className="p-8 bg-gradient-to-br from-purple-600/30 to-purple-700/40 rounded-3xl group-hover:from-purple-500/40 group-hover:to-purple-600/50 transition-all duration-500 shadow-lg"
-                    whileHover={{ rotate: 12, scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    className="relative p-10 bg-gradient-to-br from-purple-600/20 to-violet-700/30 rounded-3xl group-hover:from-purple-500/30 group-hover:to-violet-600/40 transition-all duration-500 shadow-2xl"
+                    whileHover={{ rotate: 18, scale: 1.15 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    <Webhook className="w-20 h-20 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                    {/* Glowing ring around icon */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/30 to-violet-600/30 blur-xl scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <Webhook className="w-24 h-24 text-purple-400 group-hover:text-purple-300 transition-colors relative z-10" />
+                    {/* Premium creation badge */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-purple-400/50"></div>
+                    <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-purple-400/50"></div>
                   </motion.div>
                 </div>
-                <CardTitle className="text-3xl text-white font-bold tracking-wide mb-2">
+                <CardTitle className="text-4xl text-neon font-black tracking-wide mb-4">
                   Create Webhook
                 </CardTitle>
-                <div className="w-16 h-1 bg-purple-500 mx-auto rounded-full"></div>
+                <div className="w-20 h-1.5 bg-gradient-to-r from-purple-500 to-violet-400 mx-auto rounded-full shadow-lg"></div>
               </CardHeader>
-              <CardContent className="text-center space-y-6 pb-8">
-                <p className="text-purple-200 text-lg leading-relaxed">
-                  Generate your own X-LiNk instance with custom webhook. Create
-                  your personal management portal.
+              <CardContent className="text-center space-y-8 pb-10 relative z-10">
+                <p className="text-purple-200 text-xl leading-relaxed font-medium">
+                  Enterprise-grade webhook generation with personal instance
+                  deployment
                 </p>
-                <div className="space-y-2 text-sm text-purple-300/80">
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Custom webhook URL</span>
+                <div className="space-y-3 text-base text-purple-300/90">
+                  <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                    <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-pulse"></div>
+                    <span className="font-semibold">Custom Webhook URL</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Personal instance</span>
+                  <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                    <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-pulse"></div>
+                    <span className="font-semibold">Personal Instance</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Share with others</span>
+                  <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                    <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-pulse"></div>
+                    <span className="font-semibold">Shareable Portal</span>
                   </div>
                 </div>
                 <Button
                   onClick={onCreateWebhook}
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white py-4 text-lg font-semibold shadow-xl hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-purple-600 via-violet-500 to-purple-600 hover:from-purple-500 hover:via-violet-400 hover:to-purple-500 text-white py-5 text-xl font-bold shadow-2xl hover:shadow-purple-500/40 transition-all duration-400 transform hover:scale-105 btn-professional group relative overflow-hidden"
                   size="lg"
                 >
-                  <Webhook className="w-5 h-5 mr-3" />
-                  Create Instance
+                  <div className="flex items-center justify-center gap-4 relative z-10">
+                    <Webhook className="w-6 h-6" />
+                    <span className="tracking-wider">CREATE INSTANCE</span>
+                    <div className="w-2 h-2 bg-white/80 rounded-full animate-pulse"></div>
+                  </div>
                 </Button>
               </CardContent>
             </Card>
@@ -336,16 +351,56 @@ export const Dashboard = ({
         )}
       </div>
 
+      {/* Ultra-Professional Footer */}
       <motion.div
-        className="mt-20 text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1 }}
+        className="mt-32 text-center relative"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 1.2 }}
       >
-        <div className="w-40 h-px bg-gradient-to-r from-transparent via-gray-500 to-transparent mx-auto mb-6 rounded-full"></div>
-        <p className="text-gray-500 text-sm font-light tracking-wider">
-          SECURE • RELIABLE • PROFESSIONAL
-        </p>
+        {/* Premium separator */}
+        <motion.div
+          className="relative mb-10"
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ delay: 1.4, duration: 0.8 }}
+        >
+          <div className="w-60 h-px bg-gradient-to-r from-transparent via-blue-400 via-purple-400 via-cyan-400 to-transparent mx-auto"></div>
+          <div className="absolute inset-0 w-60 h-px bg-gradient-to-r from-transparent via-blue-400 via-purple-400 via-cyan-400 to-transparent mx-auto blur-sm"></div>
+        </motion.div>
+
+        {/* Professional badges */}
+        <motion.div
+          className="flex items-center justify-center gap-8 mb-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.6, duration: 0.6 }}
+        >
+          <div className="glass-premium px-6 py-3 rounded-full border border-blue-500/30">
+            <span className="text-blue-300 text-sm font-bold tracking-wider">
+              ENTERPRISE SECURE
+            </span>
+          </div>
+          <div className="glass-premium px-6 py-3 rounded-full border border-purple-500/30">
+            <span className="text-purple-300 text-sm font-bold tracking-wider">
+              MILITARY GRADE
+            </span>
+          </div>
+          <div className="glass-premium px-6 py-3 rounded-full border border-emerald-500/30">
+            <span className="text-emerald-300 text-sm font-bold tracking-wider">
+              ULTRA RELIABLE
+            </span>
+          </div>
+        </motion.div>
+
+        <motion.p
+          className="text-gray-400 text-lg font-light tracking-wider"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8, duration: 0.6 }}
+        >
+          POWERED BY ADVANCED ENTERPRISE TECHNOLOGY
+        </motion.p>
       </motion.div>
     </div>
   );
