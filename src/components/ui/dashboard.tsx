@@ -206,55 +206,72 @@ export const Dashboard = ({
           </Card>
         </motion.div>
 
+        {/* Ultra-Premium Verify Gmail Card */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          whileHover={{ scale: 1.03, y: -8 }}
-          whileTap={{ scale: 0.97 }}
+          initial={{ opacity: 0, y: 60, rotateX: 15 }}
+          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+          whileHover={{ scale: 1.05, y: -12, rotateX: -5 }}
+          whileTap={{ scale: 0.98 }}
+          className="perspective-1000"
         >
-          <Card className="bg-black/60 border-orange-500/40 backdrop-blur-2xl hover:bg-black/70 transition-all duration-500 cursor-pointer h-full group shadow-2xl hover:shadow-orange-500/25">
-            <CardHeader className="text-center pb-8">
-              <div className="flex justify-center mb-8">
+          <Card className="card-professional border-orange-500/60 hover:border-orange-400/80 cursor-pointer h-full group relative overflow-hidden transform-gpu">
+            {/* Premium card overlay effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-amber-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <CardHeader className="text-center pb-10 relative z-10">
+              <div className="flex justify-center mb-10">
                 <motion.div
-                  className="p-8 bg-gradient-to-br from-orange-600/30 to-orange-700/40 rounded-3xl group-hover:from-orange-500/40 group-hover:to-orange-600/50 transition-all duration-500 shadow-lg"
-                  whileHover={{ rotate: -8, scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className="relative p-10 bg-gradient-to-br from-orange-600/20 to-amber-700/30 rounded-3xl group-hover:from-orange-500/30 group-hover:to-amber-600/40 transition-all duration-500 shadow-2xl"
+                  whileHover={{ rotate: -15, scale: 1.15 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <Shield className="w-20 h-20 text-orange-400 group-hover:text-orange-300 transition-colors" />
+                  {/* Glowing ring around icon */}
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-orange-500/30 to-amber-600/30 blur-xl scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <Shield className="w-24 h-24 text-orange-400 group-hover:text-orange-300 transition-colors relative z-10" />
+                  {/* Premium security badges */}
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                  <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-orange-400/50"></div>
+                  <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-orange-400/50"></div>
                 </motion.div>
               </div>
-              <CardTitle className="text-3xl text-white font-bold tracking-wide mb-2">
-                Delete Verify Gmail
+              <CardTitle className="text-4xl text-neon font-black tracking-wide mb-4">
+                Verify Gmail Delete
               </CardTitle>
-              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full"></div>
+              <div className="w-20 h-1.5 bg-gradient-to-r from-orange-500 to-amber-400 mx-auto rounded-full shadow-lg"></div>
             </CardHeader>
-            <CardContent className="text-center space-y-6 pb-8">
-              <p className="text-orange-200 text-lg leading-relaxed">
-                Advanced verified Gmail deletion. Requires both authentication
-                cookies and password.
+            <CardContent className="text-center space-y-8 pb-10 relative z-10">
+              <p className="text-orange-200 text-xl leading-relaxed font-medium">
+                Military-grade verified deletion with dual authentication
+                protocols
               </p>
-              <div className="space-y-2 text-sm text-orange-300/80">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span>Enhanced security</span>
+              <div className="space-y-3 text-base text-orange-300/90">
+                <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-orange-400 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Enhanced Security</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span>Dual authentication</span>
+                <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-orange-400 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Dual Authentication</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span>Verified processing</span>
+                <div className="flex items-center justify-center gap-3 glass-premium px-4 py-2 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-orange-400 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Verified Processing</span>
                 </div>
               </div>
               <Button
                 onClick={onDeleteVerifyGmail}
-                className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white py-4 text-lg font-semibold shadow-xl hover:shadow-orange-500/30 transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 hover:from-orange-500 hover:via-amber-400 hover:to-orange-500 text-white py-5 text-xl font-bold shadow-2xl hover:shadow-orange-500/40 transition-all duration-400 transform hover:scale-105 btn-professional group relative overflow-hidden"
                 size="lg"
               >
-                <Shield className="w-5 h-5 mr-3" />
-                Initialize Process
+                <div className="flex items-center justify-center gap-4 relative z-10">
+                  <Shield className="w-6 h-6" />
+                  <span className="tracking-wider">INITIALIZE PROCESS</span>
+                  <div className="w-2 h-2 bg-white/80 rounded-full animate-pulse"></div>
+                </div>
               </Button>
             </CardContent>
           </Card>
