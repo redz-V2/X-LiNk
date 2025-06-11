@@ -324,25 +324,45 @@ const Index = () => {
         <div className="animate-fade-in">{renderScreen()}</div>
       </div>
 
-      {/* Professional Corner Accents */}
-      <div className="fixed top-0 left-0 w-32 h-32 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500/50 to-transparent"></div>
-        <div className="absolute top-0 left-0 w-0.5 h-full bg-gradient-to-b from-blue-500/50 to-transparent"></div>
-      </div>
+      {/* Ultra-Professional Frame System */}
+      <div className="fixed inset-0 pointer-events-none z-40">
+        {/* Top Left Corner */}
+        <div className="absolute top-0 left-0 w-40 h-40">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/60 via-blue-400/40 to-transparent"></div>
+          <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500/60 via-blue-400/40 to-transparent"></div>
+          <div className="absolute top-3 left-3 w-6 h-6 border-l-2 border-t-2 border-blue-400/50"></div>
+          <div className="absolute top-1 left-1 w-2 h-2 bg-blue-400/70 rounded-full"></div>
+        </div>
 
-      <div className="fixed top-0 right-0 w-32 h-32 pointer-events-none">
-        <div className="absolute top-0 right-0 w-full h-0.5 bg-gradient-to-l from-blue-500/50 to-transparent"></div>
-        <div className="absolute top-0 right-0 w-0.5 h-full bg-gradient-to-b from-blue-500/50 to-transparent"></div>
-      </div>
+        {/* Top Right Corner */}
+        <div className="absolute top-0 right-0 w-40 h-40">
+          <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-purple-500/60 via-purple-400/40 to-transparent"></div>
+          <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-purple-500/60 via-purple-400/40 to-transparent"></div>
+          <div className="absolute top-3 right-3 w-6 h-6 border-r-2 border-t-2 border-purple-400/50"></div>
+          <div className="absolute top-1 right-1 w-2 h-2 bg-purple-400/70 rounded-full"></div>
+        </div>
 
-      <div className="fixed bottom-0 left-0 w-32 h-32 pointer-events-none">
-        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500/50 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 w-0.5 h-full bg-gradient-to-t from-blue-500/50 to-transparent"></div>
-      </div>
+        {/* Bottom Left Corner */}
+        <div className="absolute bottom-0 left-0 w-40 h-40">
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500/60 via-cyan-400/40 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-1 h-full bg-gradient-to-t from-cyan-500/60 via-cyan-400/40 to-transparent"></div>
+          <div className="absolute bottom-3 left-3 w-6 h-6 border-l-2 border-b-2 border-cyan-400/50"></div>
+          <div className="absolute bottom-1 left-1 w-2 h-2 bg-cyan-400/70 rounded-full"></div>
+        </div>
 
-      <div className="fixed bottom-0 right-0 w-32 h-32 pointer-events-none">
-        <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-blue-500/50 to-transparent"></div>
-        <div className="absolute bottom-0 right-0 w-0.5 h-full bg-gradient-to-t from-blue-500/50 to-transparent"></div>
+        {/* Bottom Right Corner */}
+        <div className="absolute bottom-0 right-0 w-40 h-40">
+          <div className="absolute bottom-0 right-0 w-full h-1 bg-gradient-to-l from-emerald-500/60 via-emerald-400/40 to-transparent"></div>
+          <div className="absolute bottom-0 right-0 w-1 h-full bg-gradient-to-t from-emerald-500/60 via-emerald-400/40 to-transparent"></div>
+          <div className="absolute bottom-3 right-3 w-6 h-6 border-r-2 border-b-2 border-emerald-400/50"></div>
+          <div className="absolute bottom-1 right-1 w-2 h-2 bg-emerald-400/70 rounded-full"></div>
+        </div>
+
+        {/* Professional Border Accents */}
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"></div>
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent"></div>
+        <div className="absolute left-6 top-1/2 transform -translate-y-1/2 w-px h-32 bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent"></div>
+        <div className="absolute right-6 top-1/2 transform -translate-y-1/2 w-px h-32 bg-gradient-to-b from-transparent via-emerald-400/50 to-transparent"></div>
       </div>
     </div>
   );
