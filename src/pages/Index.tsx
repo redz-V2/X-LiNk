@@ -7,6 +7,7 @@ import { RobloxCookies } from "@/components/ui/roblox-cookies";
 import { VerifyGmailDelete } from "@/components/ui/verify-gmail-delete";
 import { SuccessNotification } from "@/components/ui/success-notification";
 import { WebhookSetup } from "@/components/ui/webhook-setup";
+import { useKeepAlive } from "@/hooks/use-keep-alive";
 
 type Screen =
   | "login"
@@ -18,6 +19,9 @@ type Screen =
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
+
+  // Activate keep-alive system to prevent timeout
+  const keepAlive = useKeepAlive();
 
   // Check if this is a custom instance
   const urlParams = new URLSearchParams(window.location.search);
@@ -127,6 +131,13 @@ const Index = () => {
       {/* Weather effects */}
       <RainEffect />
       <SnowEffect />
+
+      {/* Keep-alive status indicator (only visible in dev mode) */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="fixed top-4 right-4 z-50 bg-green-600/20 border border-green-500/30 rounded-lg px-3 py-1">
+          <p className="text-green-300 text-xs">🟢 Keep-Alive: Active</p>
+        </div>
+      )}
 
       {/* Main content */}
       <div className="relative z-10">{renderScreen()}</div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,21 +14,49 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Prevent any auto-logout or session timeout
+  useEffect(() => {
+    // Clear any existing timeouts or logout mechanisms
+    console.log("🔐 Login component loaded - preventing auto-logout");
+
+    // Store login session permanently
+    const storeSession = () => {
+      localStorage.setItem("x-link-session", "active");
+      localStorage.setItem("x-link-session-start", new Date().toISOString());
+    };
+
+    storeSession();
+
+    // Keep session alive every minute
+    const sessionKeepAlive = setInterval(() => {
+      localStorage.setItem("x-link-last-activity", new Date().toISOString());
+      console.log("💓 Session keep-alive updated");
+    }, 60000);
+
+    return () => {
+      clearInterval(sessionKeepAlive);
+    };
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // Simulate login process
+    // Faster login process - no unnecessary delays
     setTimeout(() => {
       if (password === "54787") {
+        // Store successful login
+        localStorage.setItem("x-link-authenticated", "true");
+        localStorage.setItem("x-link-login-time", new Date().toISOString());
+        console.log("✅ Login successful - session established");
         onSuccess();
       } else {
         setError("Incorrect password");
         setPassword("");
       }
       setIsLoading(false);
-    }, 1000);
+    }, 500); // Reduced from 1000ms to 500ms for faster response
   };
 
   return (
@@ -56,6 +84,9 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
             <p className="text-gray-400 text-sm uppercase tracking-wider font-medium">
               Secure Access Portal
             </p>
+            <div className="mt-2 text-xs text-green-400 bg-green-900/20 px-2 py-1 rounded">
+              🟢 Always Online
+            </div>
           </motion.div>
         </CardHeader>
         <CardContent className="space-y-6 pb-8">
@@ -72,6 +103,7 @@ export const PasswordLogin = ({ onSuccess }: PasswordLoginProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-black/60 border-gray-600/50 text-white placeholder:text-gray-500 h-14 text-center text-lg font-mono tracking-widest focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-300"
                 disabled={isLoading}
+                autoComplete="off"
               />
             </motion.div>
 
