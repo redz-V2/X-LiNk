@@ -97,40 +97,59 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-black">
-      {/* Primary Professional Background Layer */}
+      {/* Ultra-Professional Multi-Layer Background System */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-black opacity-95" />
 
-      {/* Secondary Metallic Overlay */}
+      {/* Premium Metallic Gradient Overlay */}
       <div
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-40"
         style={{
           background: `
-            radial-gradient(circle at 20% 80%, rgba(120, 113, 108, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(82, 82, 91, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)
+            radial-gradient(circle at 20% 80%, rgba(120, 113, 108, 0.4) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(82, 82, 91, 0.4) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 60% 60%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+            linear-gradient(135deg, rgba(30, 41, 59, 0.3) 0%, rgba(15, 23, 42, 0.6) 100%)
           `,
         }}
       />
 
-      {/* Professional Grid Pattern */}
+      {/* Premium Diamond Grid Pattern */}
       <div
-        className="absolute inset-0 opacity-[0.02] grid-pattern"
+        className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.5) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.5) 1px, transparent 1px)
+            linear-gradient(rgba(59, 130, 246, 0.6) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.6) 1px, transparent 1px),
+            radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.3) 1px, transparent 1px)
           `,
-          backgroundSize: "60px 60px",
+          backgroundSize: "40px 40px, 40px 40px, 80px 80px",
+          animation: "gridShift 15s linear infinite",
         }}
       />
 
-      {/* Ambient Light Effects */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse-slow" />
+      {/* Ultra-Premium Ambient Light Effects */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/8 rounded-full blur-3xl animate-pulse-ultra-slow" />
       <div
-        className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse-slow"
-        style={{ animationDelay: "1s" }}
+        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/8 rounded-full blur-3xl animate-pulse-ultra-slow"
+        style={{ animationDelay: "2s" }}
       />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-blue-500/3 to-transparent rounded-full blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-blue-500/5 to-transparent rounded-full blur-3xl" />
+
+      {/* Premium Spotlight Effects */}
+      <div
+        className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none"
+        style={{
+          background: `
+            conic-gradient(from 45deg at 25% 25%, rgba(59, 130, 246, 0.3) 0deg, transparent 90deg),
+            conic-gradient(from 225deg at 75% 75%, rgba(147, 51, 234, 0.2) 0deg, transparent 90deg)
+          `,
+        }}
+      />
+
+      {/* Professional Depth Layers */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20" />
 
       {/* Enhanced Weather Effects */}
       <RainEffect />
