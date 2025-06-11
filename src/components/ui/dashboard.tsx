@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Shield, Trash2, Webhook } from "lucide-react";
+import { Mail, Shield, Trash2, Webhook, Zap, Star, Crown } from "lucide-react";
 import { XLogo } from "@/components/ui/x-logo";
 
 interface DashboardProps {
@@ -20,33 +20,112 @@ export const Dashboard = ({
   const isCustomInstance = urlParams.get("ref");
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 relative">
+      {/* Ultra-Premium Background Enhancement */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-blue-400/60 rounded-full animate-pulse-ultra-slow"></div>
+        <div className="absolute top-40 right-20 w-1 h-1 bg-purple-400/60 rounded-full animate-float"></div>
+        <div className="absolute bottom-32 left-20 w-3 h-3 bg-cyan-400/40 rounded-full animate-pulse-slow"></div>
+        <div className="absolute bottom-20 right-10 w-1.5 h-1.5 bg-emerald-400/60 rounded-full animate-float"></div>
+      </div>
+
+      {/* Ultra-Professional Header */}
       <motion.div
-        className="text-center mb-20"
-        initial={{ opacity: 0, y: -30 }}
+        className="text-center mb-24 relative"
+        initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1, ease: "easeOut" }}
       >
-        <div className="flex justify-center mb-6">
-          <XLogo size={120} />
-        </div>
-        <h1 className="text-7xl font-bold text-white mb-6 tracking-wider">
+        {/* Premium Logo Container */}
+        <motion.div
+          className="flex justify-center mb-8 relative"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <div className="relative">
+            {/* Glow effect behind logo */}
+            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-2xl scale-150 animate-pulse-ultra-slow"></div>
+            <div className="absolute inset-0 bg-purple-500/10 rounded-full blur-3xl scale-200 animate-pulse-slow"></div>
+            <XLogo size={140} />
+            {/* Premium badge */}
+            <motion.div
+              className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 1, type: "spring", stiffness: 300 }}
+            >
+              <Crown className="w-4 h-4 text-white" />
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Ultra-Premium Title */}
+        <motion.h1
+          className="text-8xl font-black text-holographic mb-8 tracking-wider drop-shadow-2xl"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
           X-LiNk
-        </h1>
-        <div className="w-32 h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 mx-auto mb-6 rounded-full"></div>
-        <p className="text-gray-300 text-2xl font-light tracking-wide">
-          Advanced Management System
-        </p>
+        </motion.h1>
+
+        {/* Premium Separator */}
+        <motion.div
+          className="relative mb-8"
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          <div className="w-40 h-2 bg-gradient-to-r from-blue-500 via-purple-500 via-cyan-500 to-emerald-500 mx-auto rounded-full shadow-lg"></div>
+          <div className="absolute inset-0 w-40 h-2 bg-gradient-to-r from-blue-500 via-purple-500 via-cyan-500 to-emerald-500 mx-auto rounded-full blur-sm"></div>
+        </motion.div>
+
+        {/* Ultra-Professional Subtitle */}
+        <motion.p
+          className="text-premium-gradient text-3xl font-bold tracking-wide mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          Ultra Professional Management System
+        </motion.p>
+
+        {/* Premium Status Indicators */}
+        <motion.div
+          className="flex items-center justify-center gap-8 mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.6 }}
+        >
+          <div className="flex items-center gap-2 glass-premium px-4 py-2 rounded-full">
+            <Zap className="w-4 h-4 text-yellow-400" />
+            <span className="text-yellow-300 text-sm font-bold">PREMIUM</span>
+          </div>
+          <div className="flex items-center gap-2 glass-premium px-4 py-2 rounded-full">
+            <Star className="w-4 h-4 text-blue-400" />
+            <span className="text-blue-300 text-sm font-bold">ENTERPRISE</span>
+          </div>
+          <div className="flex items-center gap-2 glass-premium px-4 py-2 rounded-full">
+            <Shield className="w-4 h-4 text-green-400" />
+            <span className="text-green-300 text-sm font-bold">SECURE</span>
+          </div>
+        </motion.div>
+
+        {/* Custom Instance Badge */}
         {isCustomInstance && (
           <motion.div
-            className="mt-4 inline-block px-4 py-2 bg-purple-600/20 border border-purple-500/30 rounded-full"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.5 }}
+            className="inline-block px-6 py-3 glass-ultra rounded-2xl border-2 border-purple-500/50"
+            initial={{ scale: 0, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 1.2, type: "spring", stiffness: 300 }}
           >
-            <p className="text-purple-300 text-sm font-medium">
-              Custom Instance
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+              <p className="text-purple-300 text-lg font-bold tracking-wide">
+                Custom Instance Portal
+              </p>
+              <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+            </div>
           </motion.div>
         )}
       </motion.div>
