@@ -259,13 +259,17 @@
     -webkit-text-fill-color: transparent;
   }
 
-  /* Professional Animations */
+  /* Ultra-Professional Animations */
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
 
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-pulse-ultra-slow {
+    animation: pulse-ultra-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .animate-fade-in {
@@ -278,6 +282,23 @@
 
   .animate-scale-in {
     animation: scaleIn 0.5s var(--ease-bounce) forwards;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-border-dance {
+    animation: border-dance 3s ease-in-out infinite;
+  }
+
+  .animate-premium-entrance {
+    animation: premiumEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+      forwards;
   }
 
   /* Professional Hover Effects */
